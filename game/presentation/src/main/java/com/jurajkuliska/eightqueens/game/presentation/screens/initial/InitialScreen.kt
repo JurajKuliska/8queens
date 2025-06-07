@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jurajkuliska.eightqueens.game.presentation.R
+import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
 import com.jurajkuliska.eightqueens.ui.components.EightQueensScaffold
 import com.jurajkuliska.eightqueens.ui.theme.Typography
 import com.jurajkuliska.eightqueens.ui.R as UiR
@@ -56,6 +58,9 @@ internal fun InitialScreen(
                     .padding(top = 120.dp)
                     .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
                 onNext = onNext,
+                onBoardSizePicked = {
+                    // TODO consume in VM
+                },
             )
         }
     }
@@ -87,11 +92,14 @@ private fun ColumnScope.Logo(
 private fun ColumnScope.ChooseDifficulty(
     modifier: Modifier = Modifier,
     onNext: () -> Unit,
+    onBoardSizePicked: (BoardSize) -> Unit,
 ) {
     Column(modifier = modifier.align(Alignment.CenterHorizontally)) {
-        Text(
-            text = "Choose difficulty"
-        )
+        Row {
+            Text(
+                text = stringResource(id = R.string.initial_screen_choose_board_size_title)
+            )
+        }
         Button(
             onClick = onNext,
         ) {
