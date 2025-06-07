@@ -4,7 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 internal class InitialViewModel : ViewModel() {
@@ -12,13 +16,57 @@ internal class InitialViewModel : ViewModel() {
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
-    fun onBoardSizePicked(boardSize: BoardSize) {
+    private val isBoardSizePickerOpened = MutableStateFlow(false)
+    private val boardSize = MutableStateFlow(BoardSize.EightByEight)
 
+    val uiState = combine(
+        isBoardSizePickerOpened,
+        boardSize,
+    ) { isBoardSizePickerOpened, boardSize ->
+        UiState(
+            boardSizePickerState = UiState.BoardSizePickerState(
+                isExpanded = isBoardSizePickerOpened,
+                selectedOption = boardSize,
+            )
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = UiState(
+            boardSizePickerState = UiState.BoardSizePickerState(
+                isExpanded = isBoardSizePickerOpened.value,
+                selectedOption = boardSize.value
+            )
+        )
+    )
+
+    fun onBoardSizePick(boardSize: BoardSize) {
+        isBoardSizePickerOpened.value = false
+        this.boardSize.value = boardSize
+    }
+
+    fun onBoardSizeDismiss() {
+        isBoardSizePickerOpened.value = false
+    }
+
+    fun onBoardSizeOpen() {
+        isBoardSizePickerOpened.value = true
     }
 
     fun onNext() {
         viewModelScope.launch {
             _uiEvent.emit(UiEvent.Next)
+        }
+    }
+
+    data class UiState(
+        val boardSizePickerState: BoardSizePickerState,
+    ) {
+        data class BoardSizePickerState(
+            val isExpanded: Boolean,
+            val selectedOption: BoardSize,
+        ) {
+            val options = BoardSize.entries
         }
     }
 

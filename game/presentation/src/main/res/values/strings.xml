@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="initial_screen_title">Welcome To 8 Queens Game</string>
+    <string name="initial_screen_title">Welcome To\n8 Queens Game</string>
     <string name="initial_screen_game_icon_content_description">8 Queens Game Logo</string>
     <string name="initial_screen_choose_board_size_title">Choose board size</string>
+    <string name="initial_screen_play_button_title">Play!</string>
     <string name="initial_screen_board_size_4_by_4">4 × 4</string>
     <string name="initial_screen_board_size_5_by_5">5 × 5</string>
     <string name="initial_screen_board_size_6_by_6">6 × 6</string>

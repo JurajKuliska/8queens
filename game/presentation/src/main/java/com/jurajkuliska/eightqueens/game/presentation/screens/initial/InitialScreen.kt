@@ -5,15 +5,24 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -32,9 +42,11 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jurajkuliska.eightqueens.game.presentation.R
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
 import com.jurajkuliska.eightqueens.ui.components.EightQueensScaffold
+import com.jurajkuliska.eightqueens.ui.theme.Spacing
 import com.jurajkuliska.eightqueens.ui.theme.Typography
 import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.compose.koinViewModel
@@ -45,6 +57,7 @@ internal fun InitialScreen(
     onNext: () -> Unit,
 ) {
     val viewModel = koinViewModel<InitialViewModel>()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     UiEventObserver(
         uiEventFlow = viewModel.uiEvent,
@@ -66,8 +79,11 @@ internal fun InitialScreen(
                 modifier = Modifier
                     .padding(top = 120.dp)
                     .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
-                onNext = onNext,
-                onBoardSizePicked = viewModel::onBoardSizePicked,
+                pickerState = uiState.boardSizePickerState,
+                onNext = viewModel::onNext,
+                onBoardSizeOpen = viewModel::onBoardSizeOpen,
+                onBoardSizePick = viewModel::onBoardSizePick,
+                onBoardSizeDismiss = viewModel::onBoardSizeDismiss,
             )
         }
     }
@@ -87,7 +103,7 @@ private fun ColumnScope.Logo(
             colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary),
         )
         Text(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(all = Spacing.xL),
             text = stringResource(R.string.initial_screen_title),
             style = Typography.headlineLarge.copy(lineBreak = LineBreak.Heading),
             textAlign = TextAlign.Center,
@@ -97,20 +113,91 @@ private fun ColumnScope.Logo(
 
 @Composable
 private fun ColumnScope.ChooseDifficulty(
+    pickerState: InitialViewModel.UiState.BoardSizePickerState,
     modifier: Modifier = Modifier,
     onNext: () -> Unit,
-    onBoardSizePicked: (BoardSize) -> Unit,
+    onBoardSizeOpen: () -> Unit,
+    onBoardSizePick: (BoardSize) -> Unit,
+    onBoardSizeDismiss: () -> Unit,
 ) {
-    Column(modifier = modifier.align(Alignment.CenterHorizontally)) {
-        Row {
-            Text(
-                text = stringResource(id = R.string.initial_screen_choose_board_size_title)
-            )
-        }
+    Column(
+        modifier = modifier.align(Alignment.CenterHorizontally),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(space = Spacing.L)
+    ) {
+
+        Text(text = stringResource(id = R.string.initial_screen_choose_board_size_title))
+
+        BoardSizePickerDropDown(
+            pickerState = pickerState,
+            onBoardSizeOpen = onBoardSizeOpen,
+            onBoardSizePick = onBoardSizePick,
+            onBoardSizeDismiss = onBoardSizeDismiss,
+        )
+
         Button(
             onClick = onNext,
         ) {
-            Text(text = "Click to Play!")
+            Text(text = stringResource(id = R.string.initial_screen_play_button_title))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BoardSizePickerDropDown(
+    modifier: Modifier = Modifier,
+    pickerState: InitialViewModel.UiState.BoardSizePickerState,
+    onBoardSizeOpen: () -> Unit,
+    onBoardSizePick: (BoardSize) -> Unit,
+    onBoardSizeDismiss: () -> Unit,
+) {
+    ExposedDropdownMenuBox(
+        modifier = modifier
+            .width(120.dp)
+            .clip(MaterialTheme.shapes.medium),
+        expanded = pickerState.isExpanded,
+        onExpandedChange = {
+            if (it) {
+                onBoardSizeOpen()
+            } else {
+                onBoardSizeDismiss()
+            }
+        }
+    ) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextField(
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable),
+                value = stringResource(pickerState.selectedOption.title),
+                onValueChange = { },
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = pickerState.isExpanded)
+                },
+            )
+        }
+
+        ExposedDropdownMenu(
+            expanded = pickerState.isExpanded,
+            onDismissRequest = {
+                onBoardSizeDismiss()
+            }
+        ) {
+            pickerState.options.forEach {
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = it.title))
+                    },
+                    onClick = {
+                        onBoardSizePick(it)
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
+            }
         }
     }
 }
