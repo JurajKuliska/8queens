@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.EightQueens"
+        android:name=".app.EightQueensApplication"
         tools:targetApi="31">
         <activity
             android:name=".app.MainActivity"

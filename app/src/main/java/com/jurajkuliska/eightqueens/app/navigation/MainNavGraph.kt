@@ -1,4 +1,4 @@
-package com.jurajkuliska.eightqueens.app
+package com.jurajkuliska.eightqueens.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

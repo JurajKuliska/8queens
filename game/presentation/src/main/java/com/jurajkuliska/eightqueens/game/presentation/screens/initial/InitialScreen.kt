@@ -36,12 +36,21 @@ import com.jurajkuliska.eightqueens.game.presentation.R
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
 import com.jurajkuliska.eightqueens.ui.components.EightQueensScaffold
 import com.jurajkuliska.eightqueens.ui.theme.Typography
+import kotlinx.coroutines.flow.Flow
+import org.koin.androidx.compose.koinViewModel
 import com.jurajkuliska.eightqueens.ui.R as UiR
 
 @Composable
 internal fun InitialScreen(
     onNext: () -> Unit,
 ) {
+    val viewModel = koinViewModel<InitialViewModel>()
+
+    UiEventObserver(
+        uiEventFlow = viewModel.uiEvent,
+        onNext = onNext,
+    )
+
     EightQueensScaffold {
         val enterAnimation = getEnterAnimation()
         Column(
@@ -58,9 +67,7 @@ internal fun InitialScreen(
                     .padding(top = 120.dp)
                     .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
                 onNext = onNext,
-                onBoardSizePicked = {
-                    // TODO consume in VM
-                },
+                onBoardSizePicked = viewModel::onBoardSizePicked,
             )
         }
     }
@@ -139,6 +146,20 @@ private fun getEnterAnimation(): EnterAnimation {
         logoOffsetValue = logoOffsetAnimation.value,
         chooseDifficultyAlpha = chooseDifficultyAlphaAnimation.value,
     )
+}
+
+@Composable
+private fun UiEventObserver(
+    uiEventFlow: Flow<InitialViewModel.UiEvent>,
+    onNext: () -> Unit,
+) {
+    LaunchedEffect(key1 = Unit) {
+        uiEventFlow.collect { uiEvent ->
+            when (uiEvent) {
+                InitialViewModel.UiEvent.Next -> onNext()
+            }
+        }
+    }
 }
 
 private data class EnterAnimation(
