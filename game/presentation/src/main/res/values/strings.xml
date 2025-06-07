@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="initial_screen_title">Welcome To 8 Queens Game</string>
+    <string name="initial_screen_game_icon_content_description">8 Queens Game Logo</string>
+</resources>

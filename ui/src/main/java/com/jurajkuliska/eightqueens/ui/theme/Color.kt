@@ -2,10 +2,10 @@ package com.jurajkuliska.eightqueens.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val PrimaryDark = Color(0xFFC5E1A5)
+val SecondaryDark = Color(0xFF80CBC4)
+val TertiaryDark = Color(0xFFF48FB1)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val PrimaryLight = Color(0xFF8BC34A)
+val SecondaryLight = Color(0xFF009688)
+val TertiaryLight = Color(0xFFE91E63)
