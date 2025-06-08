@@ -102,7 +102,8 @@ private fun Board(
 ) {
     Box(modifier = modifier
         .aspectRatio(ratio = 1f)
-        .background(Color.Red)) {
+        .background(Color.Red)
+    ) {
 
     }
 }
