@@ -32,7 +32,7 @@ internal class InitialViewModel : ViewModel() {
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Lazily,
+        started = SharingStarted.WhileSubscribed(),
         initialValue = UiState(
             boardSizePickerState = UiState.BoardSizePickerState(
                 isExpanded = isBoardSizePickerOpened.value,

@@ -5,4 +5,5 @@ data class BoardTile(
     val isWhite: Boolean,
     val rowNotation: String?,
     val columnNotation: String?,
+    val hasQueen: Boolean,
 )

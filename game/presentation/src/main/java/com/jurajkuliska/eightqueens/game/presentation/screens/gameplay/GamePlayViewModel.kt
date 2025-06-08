@@ -1,20 +1,32 @@
 package com.jurajkuliska.eightqueens.game.presentation.screens.gameplay
 
 import androidx.lifecycle.ViewModel
-import com.jurajkuliska.eightqueens.game.domain.usecase.CreateBoardUseCase
+import androidx.lifecycle.viewModelScope
+import com.jurajkuliska.eightqueens.game.domain.handler.BoardStateHandler
+import com.jurajkuliska.eightqueens.game.domain.model.BoardState
+import com.jurajkuliska.eightqueens.game.domain.usecase.GetBoardStateHandlerUseCase
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 internal class GamePlayViewModel(
     navArgs: GameRoute.GamePlay,
-    private val createBoardUseCase: CreateBoardUseCase,
+    getBoardStateHandlerUseCase: GetBoardStateHandlerUseCase,
 ) : ViewModel() {
 
-    val uiState = MutableStateFlow(UiState(navArgs.boardSize))
+    private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(boardSize = navArgs.boardSize)
+    val uiState: StateFlow<UiState> = boardStateHandler.board.map {
+        UiState(boardState = it)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = UiState(BoardState(board = persistentListOf())),
+    )
 
     data class UiState(
-        private val boardSize: Int,
-    ) {
-//        val board: ImmutableList<ImmutableList<BoardTileUi>> = createBoardUseCase(boardSize = boardSize)
-    }
+        val boardState: BoardState,
+    )
 }

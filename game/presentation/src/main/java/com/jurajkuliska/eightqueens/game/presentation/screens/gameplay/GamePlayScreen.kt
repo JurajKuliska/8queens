@@ -22,7 +22,7 @@ internal fun GamePlayScreen(
 
     EightQueensScaffold {
         Column(modifier = Modifier.align(Alignment.Center)) {
-            Text(text = "Game started ${uiState.boardSize}")
+            Text(text = "Game started ${uiState.boardState.board.size}")
             Button(
                 onClick = onNext,
             ) {

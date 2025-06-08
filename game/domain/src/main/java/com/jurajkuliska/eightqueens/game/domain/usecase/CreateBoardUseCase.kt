@@ -3,7 +3,7 @@ package com.jurajkuliska.eightqueens.game.domain.usecase
 import com.jurajkuliska.eightqueens.game.domain.model.BoardTile
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
 
-interface CreateBoardUseCase {
+internal interface CreateBoardUseCase {
     operator fun invoke(boardSize: Int): List<List<BoardTile>>
 }
 
@@ -19,6 +19,7 @@ internal class CreateBoardUseCaseImpl(
                     isWhite = isWhite(boardSize = boardSize, rowIndex = rowIndex, columnIndex = columnIndex),
                     rowNotation = takeIf { columnIndex == 0 }?.let { (rowIndex + 1).toString() },
                     columnNotation = takeIf { rowIndex == 0 }?.let { getColumnNotationUseCase(columnIndex = columnIndex) }?.toString(),
+                    hasQueen = false,
                 )
             }
         }

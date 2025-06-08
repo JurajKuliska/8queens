@@ -3,10 +3,13 @@ package com.jurajkuliska.eightqueens.game.domain.usecase
 import com.google.common.truth.Truth.assertThat
 import com.jurajkuliska.eightqueens.game.domain.model.BoardTile
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -14,6 +17,11 @@ import org.junit.runner.RunWith
 internal class CreateBoardUseCaseImplTest {
 
     private val getColumnNotationUseCaseMock = mockk<GetColumnNotationUseCase>()
+
+    @After
+    fun tearDown() {
+        confirmVerified(getColumnNotationUseCaseMock)
+    }
 
     @Parameters(method = "getTestData")
     @Test
@@ -23,6 +31,10 @@ internal class CreateBoardUseCaseImplTest {
         }
         val sut = initSut()
         assertThat(sut(boardSize = testData.inputBoardSize)).isEqualTo(testData.expectedResult)
+
+        testData.columnNotationMock.forEach {
+            verify(exactly = 1) { getColumnNotationUseCaseMock(columnIndex = it.first) }
+        }
     }
 
     fun getTestData() = listOf<TestDataHolder>(
@@ -33,12 +45,7 @@ internal class CreateBoardUseCaseImplTest {
             columnNotationMock = listOf(0 to 'A'),
             expectedResult = listOf(
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 0),
-                        isWhite = true,
-                        rowNotation = "1",
-                        columnNotation = "A",
-                    )
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 0), rowNotation = "1", columnNotation = "A")
                 )
             ),
         ),
@@ -47,32 +54,12 @@ internal class CreateBoardUseCaseImplTest {
             columnNotationMock = listOf(0 to 'A', 1 to 'B'),
             expectedResult = listOf(
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 0),
-                        isWhite = true,
-                        rowNotation = "2",
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 1),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 0), rowNotation = "2", columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 1), rowNotation = null, columnNotation = null),
                 ),
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 0),
-                        isWhite = false,
-                        rowNotation = "1",
-                        columnNotation = "A",
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 1),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = "B",
-                    )
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 0), rowNotation = "1", columnNotation = "A"),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 1), rowNotation = null, columnNotation = "B")
                 )
             ),
         ),
@@ -81,64 +68,19 @@ internal class CreateBoardUseCaseImplTest {
             columnNotationMock = listOf(0 to 'A', 1 to 'B', 2 to 'C'),
             expectedResult = listOf(
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 0),
-                        isWhite = true,
-                        rowNotation = "3",
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 1),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 2),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 0), rowNotation = "3", columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 1), rowNotation = null, columnNotation = null),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 2), rowNotation = null, columnNotation = null),
                 ),
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 0),
-                        isWhite = false,
-                        rowNotation = "2",
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 1),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 2),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 0), rowNotation = "2", columnNotation = null),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 1), rowNotation = null, columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 2), rowNotation = null, columnNotation = null),
                 ),
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 0),
-                        isWhite = true,
-                        rowNotation = "1",
-                        columnNotation = "A",
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 1),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = "B",
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 2),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = "C",
-                    )
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 0), rowNotation = "1", columnNotation = "A"),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 1), rowNotation = null, columnNotation = "B"),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 2), rowNotation = null, columnNotation = "C")
                 )
             ),
         ),
@@ -147,108 +89,28 @@ internal class CreateBoardUseCaseImplTest {
             columnNotationMock = listOf(0 to 'A', 1 to 'B', 2 to 'C', 3 to 'X'),
             expectedResult = listOf(
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 3, columnIndex = 0),
-                        isWhite = true,
-                        rowNotation = "4",
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 3, columnIndex = 1),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 3, columnIndex = 2),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 3, columnIndex = 3),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 0), rowNotation = "4", columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 1), rowNotation = null, columnNotation = null),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 2), rowNotation = null, columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 3), rowNotation = null, columnNotation = null),
                 ),
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 0),
-                        isWhite = false,
-                        rowNotation = "3",
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 1),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 2),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 2, columnIndex = 3),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 0), rowNotation = "3", columnNotation = null),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 1), rowNotation = null, columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 2), rowNotation = null, columnNotation = null),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 3), rowNotation = null, columnNotation = null),
                 ),
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 0),
-                        isWhite = true,
-                        rowNotation = "2",
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 1),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 2),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 1, columnIndex = 3),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = null,
-                    ),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 0), rowNotation = "2", columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 1), rowNotation = null, columnNotation = null),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 2), rowNotation = null, columnNotation = null),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 3), rowNotation = null, columnNotation = null),
                 ),
                 listOf(
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 0),
-                        isWhite = false,
-                        rowNotation = "1",
-                        columnNotation = "A",
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 1),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = "B",
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 2),
-                        isWhite = false,
-                        rowNotation = null,
-                        columnNotation = "C",
-                    ),
-                    BoardTile(
-                        coordinates = Coordinates(rowIndex = 0, columnIndex = 3),
-                        isWhite = true,
-                        rowNotation = null,
-                        columnNotation = "X",
-                    )
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 0), rowNotation = "1", columnNotation = "A"),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 1), rowNotation = null, columnNotation = "B"),
+                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 2), rowNotation = null, columnNotation = "C"),
+                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 3), rowNotation = null, columnNotation = "X")
                 )
             ),
         ),
@@ -258,6 +120,30 @@ internal class CreateBoardUseCaseImplTest {
         val inputBoardSize: Int,
         val columnNotationMock: List<Pair<Int, Char>>,
         val expectedResult: List<List<BoardTile>>,
+    )
+
+    private fun createWhiteBoardTile(
+        coordinates: Coordinates,
+        rowNotation: String?,
+        columnNotation: String?,
+    ) = BoardTile(
+        coordinates = coordinates,
+        rowNotation = rowNotation,
+        columnNotation = columnNotation,
+        isWhite = true,
+        hasQueen = false,
+    )
+
+    private fun createBlackBoardTile(
+        coordinates: Coordinates,
+        rowNotation: String?,
+        columnNotation: String?,
+    ) = BoardTile(
+        coordinates = coordinates,
+        rowNotation = rowNotation,
+        columnNotation = columnNotation,
+        isWhite = false,
+        hasQueen = false,
     )
 
     private fun initSut() = CreateBoardUseCaseImpl(

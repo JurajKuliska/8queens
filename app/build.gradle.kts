@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.game.domain)
     implementation(projects.game.presentation)
     implementation(projects.navigation)
     implementation(projects.ui)
