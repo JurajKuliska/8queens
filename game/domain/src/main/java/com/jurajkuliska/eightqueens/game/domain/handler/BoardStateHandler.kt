@@ -34,19 +34,24 @@ internal class BoardStateHandlerImpl(
                 it.map { tile ->
                     tile.copy(hasQueen = queensCoordinates.contains(tile.coordinates))
                 }.toPersistentList()
-            }.toPersistentList()
+            }.toPersistentList(),
+            queensLeft = boardSize - queens.size,
         )
     }
 
     override fun placeQueen(coordinates: Coordinates): QueenPlacementResult =
         if (coordinates.hasQueen()) {
             queens.value = queens.value.filterNot { it.coordinates == coordinates }.toSet()
-            QueenPlacementResult.Success
+            QueenPlacementResult.Success.Removed
         } else {
             val queen = Queen(coordinates = coordinates, boardSize = boardSize)
             if (coordinates.canPlaceQueen()) {
                 queens.value = queens.value + queen
-                QueenPlacementResult.Success
+                if (queens.value.size == boardSize) {
+                    QueenPlacementResult.Success.AddedAndWin
+                } else {
+                    QueenPlacementResult.Success.Added
+                }
             } else {
                 QueenPlacementResult.Conflict(queen = queen)
             }

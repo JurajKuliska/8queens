@@ -3,6 +3,9 @@ package com.jurajkuliska.eightqueens.game.domain.usecase
 import com.google.common.truth.Truth.assertThat
 import com.jurajkuliska.eightqueens.game.domain.model.BoardTile
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
+import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.createBlackBoardTile
+import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.createWhiteBoardTile
+import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardDefinitionSize4
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -87,32 +90,7 @@ internal class CreateBoardUseCaseImplTest {
         TestDataHolder(
             inputBoardSize = 4,
             columnNotationMock = listOf(0 to 'A', 1 to 'B', 2 to 'C', 3 to 'X'),
-            expectedResult = listOf(
-                listOf(
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 0), rowNotation = "4", columnNotation = null),
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 1), rowNotation = null, columnNotation = null),
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 2), rowNotation = null, columnNotation = null),
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 3, columnIndex = 3), rowNotation = null, columnNotation = null),
-                ),
-                listOf(
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 0), rowNotation = "3", columnNotation = null),
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 1), rowNotation = null, columnNotation = null),
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 2), rowNotation = null, columnNotation = null),
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 2, columnIndex = 3), rowNotation = null, columnNotation = null),
-                ),
-                listOf(
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 0), rowNotation = "2", columnNotation = null),
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 1), rowNotation = null, columnNotation = null),
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 2), rowNotation = null, columnNotation = null),
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 1, columnIndex = 3), rowNotation = null, columnNotation = null),
-                ),
-                listOf(
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 0), rowNotation = "1", columnNotation = "A"),
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 1), rowNotation = null, columnNotation = "B"),
-                    createBlackBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 2), rowNotation = null, columnNotation = "C"),
-                    createWhiteBoardTile(coordinates = Coordinates(rowIndex = 0, columnIndex = 3), rowNotation = null, columnNotation = "X")
-                )
-            ),
+            expectedResult = getBoardDefinitionSize4(),
         ),
     )
 
@@ -120,30 +98,6 @@ internal class CreateBoardUseCaseImplTest {
         val inputBoardSize: Int,
         val columnNotationMock: List<Pair<Int, Char>>,
         val expectedResult: List<List<BoardTile>>,
-    )
-
-    private fun createWhiteBoardTile(
-        coordinates: Coordinates,
-        rowNotation: String?,
-        columnNotation: String?,
-    ) = BoardTile(
-        coordinates = coordinates,
-        rowNotation = rowNotation,
-        columnNotation = columnNotation,
-        isWhite = true,
-        hasQueen = false,
-    )
-
-    private fun createBlackBoardTile(
-        coordinates: Coordinates,
-        rowNotation: String?,
-        columnNotation: String?,
-    ) = BoardTile(
-        coordinates = coordinates,
-        rowNotation = rowNotation,
-        columnNotation = columnNotation,
-        isWhite = false,
-        hasQueen = false,
     )
 
     private fun initSut() = CreateBoardUseCaseImpl(
