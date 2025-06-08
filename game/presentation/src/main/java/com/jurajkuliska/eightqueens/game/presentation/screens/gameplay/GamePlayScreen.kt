@@ -1,5 +1,6 @@
 package com.jurajkuliska.eightqueens.game.presentation.screens.gameplay
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,11 +22,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
 import com.jurajkuliska.eightqueens.game.presentation.R
@@ -36,9 +45,11 @@ import com.jurajkuliska.eightqueens.ui.theme.PieceColor
 import com.jurajkuliska.eightqueens.ui.theme.Spacing
 import com.jurajkuliska.eightqueens.ui.theme.TileDark
 import com.jurajkuliska.eightqueens.ui.theme.TileLight
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.random.Random
 import com.jurajkuliska.eightqueens.ui.R as uiR
 
 @Composable
@@ -75,9 +86,23 @@ private fun Content(
     onResetClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var initialAlpha by remember { mutableFloatStateOf(0f) }
+    val initialAlphaAnimation = animateFloatAsState(initialAlpha)
+    var initialOffset by remember { mutableStateOf(40.dp) }
+    val initialOffsetAnimation = animateDpAsState(initialOffset)
+
+    LaunchedEffect(key1 = Unit) {
+        delay(500)
+        initialAlpha = 1f
+        initialOffset = 0.dp
+    }
+
     Column(modifier = modifier) {
         Text(
-            modifier = Modifier.padding(all = Spacing.xxL),
+            modifier = Modifier
+                .padding(all = Spacing.xxL)
+                .alpha(alpha = initialAlphaAnimation.value)
+                .offset(y = -initialOffsetAnimation.value),
             text = stringResource(id = R.string.gameplay_screen_instructions, uiState.boardState.totalQueensToPlace),
             textAlign = TextAlign.Center,
         )
@@ -89,13 +114,17 @@ private fun Content(
         Text(
             modifier = Modifier
                 .padding(all = Spacing.xxL)
-                .align(alignment = Alignment.CenterHorizontally),
+                .align(alignment = Alignment.CenterHorizontally)
+                .alpha(alpha = initialAlphaAnimation.value)
+                .offset(y = initialOffsetAnimation.value),
             text = stringResource(id = R.string.gameplay_screen_queens_left, uiState.boardState.queensLeft)
         )
         Button(
             modifier = Modifier
                 .padding(top = Spacing.xL)
-                .align(alignment = Alignment.CenterHorizontally),
+                .align(alignment = Alignment.CenterHorizontally)
+                .alpha(alpha = initialAlphaAnimation.value)
+                .offset(y = initialOffsetAnimation.value),
             onClick = onResetClick,
         ) {
             Text(text = stringResource(id = R.string.gameplay_screen_restart_game))
@@ -135,8 +164,19 @@ private fun Tile(
     onClick: () -> Unit,
 ) {
     val queenSizeAnimation = animateFloatAsState(targetValue = if (tile.hasQueen) 1f else 0f)
+    var initialAnimationValue by remember { mutableFloatStateOf(0f) }
+    val initialAnimation = animateFloatAsState(targetValue = initialAnimationValue)
+
+    LaunchedEffect(key1 = Unit) {
+        // delay the animation of tiles appearing such that it creates a gradually appearing effect
+        delay(50L * Random.nextInt(0, 10))
+        initialAnimationValue = 1f
+    }
+
     Box(
         modifier = modifier
+            .fillMaxSize(fraction = initialAnimation.value)
+            .alpha(alpha = 0.01f + initialAnimation.value)
             .background(color = if (tile.isLight) TileLight else TileDark)
             .clickable {
                 onClick()
