@@ -1,13 +1,15 @@
 package com.jurajkuliska.eightqueens.game.presentation.navigation
 
+import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.Serializable
 
-internal sealed class GameRoute {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+sealed class GameRoute {
     @Serializable
     data object Initial : GameRoute()
 
     @Serializable
-    data object Main : GameRoute()
+    data class GamePlay(val boardSize: Int) : GameRoute()
 
     @Serializable
     data class Congratulations(val message: String) : GameRoute()

@@ -3,6 +3,7 @@ package com.jurajkuliska.eightqueens.game.presentation.screens.initial
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
+import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -55,7 +56,7 @@ internal class InitialViewModel : ViewModel() {
 
     fun onNext() {
         viewModelScope.launch {
-            _uiEvent.emit(UiEvent.Next)
+            _uiEvent.emit(UiEvent.Next(route = GameRoute.GamePlay(boardSize = boardSize.value.size)))
         }
     }
 
@@ -71,6 +72,6 @@ internal class InitialViewModel : ViewModel() {
     }
 
     sealed interface UiEvent {
-        data object Next : UiEvent
+        data class Next(val route: GameRoute.GamePlay) : UiEvent
     }
 }

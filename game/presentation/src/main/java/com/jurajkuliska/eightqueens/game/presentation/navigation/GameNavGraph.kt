@@ -6,8 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.jurajkuliska.eightqueens.game.presentation.screens.congratulations.CongratulationsScreen
+import com.jurajkuliska.eightqueens.game.presentation.screens.gameplay.GamePlayScreen
 import com.jurajkuliska.eightqueens.game.presentation.screens.initial.InitialScreen
-import com.jurajkuliska.eightqueens.game.presentation.screens.main.MainScreen
 import com.jurajkuliska.eightqueens.navigation.NavigableGraph
 
 fun NavGraphBuilder.gameNavGraph(navController: NavController) =
@@ -16,11 +16,13 @@ fun NavGraphBuilder.gameNavGraph(navController: NavController) =
     ) {
         composable<GameRoute.Initial> {
             InitialScreen(
-                onNext = { navController.navigate(GameRoute.Main) },
+                onNext = { navController.navigate(route = it) },
             )
         }
-        composable<GameRoute.Main> {
-            MainScreen(
+        composable<GameRoute.GamePlay> { backStackEntry ->
+            val navArgs: GameRoute.GamePlay = backStackEntry.toRoute()
+            GamePlayScreen(
+                navArgs = navArgs,
                 onNext = { navController.navigate(GameRoute.Congratulations(message = "Congrats!")) },
             )
         }

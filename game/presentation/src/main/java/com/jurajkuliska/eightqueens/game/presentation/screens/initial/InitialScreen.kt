@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jurajkuliska.eightqueens.game.presentation.R
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
+import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import com.jurajkuliska.eightqueens.ui.components.EightQueensScaffold
 import com.jurajkuliska.eightqueens.ui.theme.Spacing
 import com.jurajkuliska.eightqueens.ui.theme.Typography
@@ -54,7 +55,7 @@ import com.jurajkuliska.eightqueens.ui.R as UiR
 
 @Composable
 internal fun InitialScreen(
-    onNext: () -> Unit,
+    onNext: (GameRoute.GamePlay) -> Unit,
 ) {
     val viewModel = koinViewModel<InitialViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -241,12 +242,12 @@ private fun getEnterAnimation(): EnterAnimation {
 @Composable
 private fun UiEventObserver(
     uiEventFlow: Flow<InitialViewModel.UiEvent>,
-    onNext: () -> Unit,
+    onNext: (GameRoute.GamePlay) -> Unit,
 ) {
     LaunchedEffect(key1 = Unit) {
         uiEventFlow.collect { uiEvent ->
             when (uiEvent) {
-                InitialViewModel.UiEvent.Next -> onNext()
+                is InitialViewModel.UiEvent.Next -> onNext(uiEvent.route)
             }
         }
     }
