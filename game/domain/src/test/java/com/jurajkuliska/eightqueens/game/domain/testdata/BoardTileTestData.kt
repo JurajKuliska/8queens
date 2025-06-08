@@ -73,7 +73,7 @@ internal object BoardTileTestData {
         coordinates = coordinates,
         rowNotation = rowNotation,
         columnNotation = columnNotation,
-        isWhite = true,
+        isLight = true,
         hasQueen = false,
     )
 
@@ -85,7 +85,7 @@ internal object BoardTileTestData {
         coordinates = coordinates,
         rowNotation = rowNotation,
         columnNotation = columnNotation,
-        isWhite = false,
+        isLight = false,
         hasQueen = false,
     )
 }

@@ -21,7 +21,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.koin.android)
-    implementation(libs.kotlinx.collections.immutable)
 
     testImplementation(libs.junit)
     testImplementation(libs.google.truth)

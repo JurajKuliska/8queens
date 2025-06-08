@@ -11,8 +11,6 @@ import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBo
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow1
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow2
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow3
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -46,13 +44,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2().toPersistentList(),
-                        getBoardRow1().toPersistentList(),
-                        getBoardRow0().toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(),
+                        getBoardRow0(),
                     ),
                 )
             )
@@ -65,15 +61,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2().toPersistentList(),
-                        getBoardRow1(
-                            column0 = getBoardRow1()[0].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow0().toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                        getBoardRow0(),
                     ),
                 )
             )
@@ -86,17 +78,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2().toPersistentList(),
-                        getBoardRow1(
-                            column0 = getBoardRow1()[0].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow0(
-                            column2 = getBoardRow0()[2].copy(hasQueen = true)
-                        ).toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
                     ),
                 )
             )
@@ -109,19 +95,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2(
-                            column3 = getBoardRow2()[3].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow1(
-                            column0 = getBoardRow1()[0].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow0(
-                            column2 = getBoardRow0()[2].copy(hasQueen = true)
-                        ).toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
+                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
                     ),
                 )
             )
@@ -157,15 +135,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2().toPersistentList(),
-                        getBoardRow1().toPersistentList(),
-                        getBoardRow0(
-                            column2 = getBoardRow0()[2].copy(hasQueen = true)
-                        ).toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
                     ),
                 )
             )
@@ -178,13 +152,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2().toPersistentList(),
-                        getBoardRow1().toPersistentList(),
-                        getBoardRow0().toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(),
+                        getBoardRow0(),
                     ),
                 )
             )
@@ -197,15 +169,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2(
-                            column3 = getBoardRow2()[3].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow1().toPersistentList(),
-                        getBoardRow0().toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
+                        getBoardRow1(),
+                        getBoardRow0(),
                     ),
                 )
             )
@@ -229,13 +197,11 @@ internal class BoardStateHandlerImplTest {
              */
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
-                    board = persistentListOf(
-                        getBoardRow3(
-                            column1 = getBoardRow3()[1].copy(hasQueen = true),
-                        ).toPersistentList(),
-                        getBoardRow2().toPersistentList(),
-                        getBoardRow1().toPersistentList(),
-                        getBoardRow0().toPersistentList(),
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(),
+                        getBoardRow0(),
                     ),
                 )
             )
@@ -286,11 +252,11 @@ internal class BoardStateHandlerImplTest {
 
     private companion object {
         val boardStateDefault = BoardState(
-            board = persistentListOf(
-                getBoardRow3().toPersistentList(),
-                getBoardRow2().toPersistentList(),
-                getBoardRow1().toPersistentList(),
-                getBoardRow0().toPersistentList(),
+            board = listOf(
+                getBoardRow3(),
+                getBoardRow2(),
+                getBoardRow1(),
+                getBoardRow0(),
             )
         )
     }

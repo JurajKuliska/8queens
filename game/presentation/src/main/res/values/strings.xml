@@ -13,4 +13,5 @@
     <string name="gameplay_screen_queens_left">Queens left to place on the board: %1$d</string>
     <string name="gameplay_screen_restart_game">Restart Game</string>
     <string name="general_back_button_content_description">Navigate Back</string>
+    <string name="general_queen_content_description">Queen</string>
 </resources>

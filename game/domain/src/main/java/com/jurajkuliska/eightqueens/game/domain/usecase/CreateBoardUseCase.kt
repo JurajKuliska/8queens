@@ -16,7 +16,7 @@ internal class CreateBoardUseCaseImpl(
             (0 until boardSize).map { columnIndex ->
                 BoardTile(
                     coordinates = Coordinates(rowIndex = rowIndex, columnIndex = columnIndex),
-                    isWhite = isWhite(boardSize = boardSize, rowIndex = rowIndex, columnIndex = columnIndex),
+                    isLight = isWhite(boardSize = boardSize, rowIndex = rowIndex, columnIndex = columnIndex),
                     rowNotation = takeIf { columnIndex == 0 }?.let { (rowIndex + 1).toString() },
                     columnNotation = takeIf { rowIndex == 0 }?.let { getColumnNotationUseCase(columnIndex = columnIndex) }?.toString(),
                     hasQueen = false,

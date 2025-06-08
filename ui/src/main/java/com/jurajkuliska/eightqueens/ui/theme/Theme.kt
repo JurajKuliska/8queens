@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
     secondary = SecondaryDark,
-    tertiary = TertiaryDark
+    tertiary = TertiaryDark,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -50,6 +50,6 @@ fun EightQueensTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

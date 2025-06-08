@@ -7,9 +7,6 @@ import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBo
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow3
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -26,65 +23,53 @@ internal class BoardStateTest {
     }
 
     fun getTotalQueensToPlaceTestData() = listOf(
-        TestDataHolder(inputBoard = persistentListOf(), expectedTotalQueensToPlace = 0, expectedQueensLeft = 0),
+        TestDataHolder(inputBoard = listOf(), expectedTotalQueensToPlace = 0, expectedQueensLeft = 0),
         TestDataHolder(
-            inputBoard = persistentListOf(
-                getBoardRow3(
-                    column1 = getBoardRow3()[1].copy(hasQueen = true),
-                ).toPersistentList(),
-                getBoardRow2().toPersistentList(),
-                getBoardRow1(
-                    column0 = getBoardRow1()[0].copy(hasQueen = true),
-                ).toPersistentList(),
-                getBoardRow0().toPersistentList(),
+            inputBoard = listOf(
+                getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                getBoardRow2(),
+                getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                getBoardRow0(),
             ),
             expectedTotalQueensToPlace = 4,
             expectedQueensLeft = 2,
         ),
         TestDataHolder(
-            inputBoard = persistentListOf(
-                getBoardRow3(
-                    column1 = getBoardRow3()[1].copy(hasQueen = true),
-                ).toPersistentList(),
-                getBoardRow2(
-                    column3 = getBoardRow2()[3].copy(hasQueen = true),
-                ).toPersistentList(),
-                getBoardRow1(
-                    column0 = getBoardRow1()[0].copy(hasQueen = true),
-                ).toPersistentList(),
-                getBoardRow0(
-                    column2 = getBoardRow0()[2].copy(hasQueen = true)
-                ).toPersistentList(),
+            inputBoard = listOf(
+                getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
+                getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
             ),
             expectedTotalQueensToPlace = 4,
             expectedQueensLeft = 0,
         ),
         TestDataHolder(
-            inputBoard = persistentListOf(
-                getBoardRow3(
-                    column1 = getBoardRow3()[1].copy(hasQueen = true),
-                ).toPersistentList(),
-                getBoardRow2().toPersistentList(),
-                getBoardRow0().toPersistentList(),
+            inputBoard = listOf(
+                getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                getBoardRow2(),
+                getBoardRow0(),
             ),
             expectedTotalQueensToPlace = 3,
-            expectedQueensLeft = 2
+            expectedQueensLeft = 2,
         ),
         TestDataHolder(
-            inputBoard = persistentListOf(
-                getBoardRow3().toPersistentList(),
-                getBoardRow3().toPersistentList(),
-                getBoardRow3().toPersistentList(),
-                getBoardRow3().toPersistentList(),
-                getBoardRow3().toPersistentList(),
-                getBoardRow2().toPersistentList(),
-                getBoardRow0().toPersistentList(),
-            ), expectedTotalQueensToPlace = 7, expectedQueensLeft = 7
+            inputBoard = listOf(
+                getBoardRow3(),
+                getBoardRow3(),
+                getBoardRow3(),
+                getBoardRow3(),
+                getBoardRow3(),
+                getBoardRow2(),
+                getBoardRow0(),
+            ),
+            expectedTotalQueensToPlace = 7,
+            expectedQueensLeft = 7,
         ),
     )
 
     data class TestDataHolder(
-        val inputBoard: ImmutableList<ImmutableList<BoardTile>>,
+        val inputBoard: List<List<BoardTile>>,
         val expectedTotalQueensToPlace: Int,
         val expectedQueensLeft: Int,
     )

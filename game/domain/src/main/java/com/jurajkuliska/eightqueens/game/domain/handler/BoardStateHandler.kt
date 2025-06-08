@@ -5,7 +5,6 @@ import com.jurajkuliska.eightqueens.game.domain.model.BoardTile
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
 import com.jurajkuliska.eightqueens.game.domain.model.Queen
 import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -33,8 +32,8 @@ internal class BoardStateHandlerImpl(
             board = boardDefinition.map {
                 it.map { tile ->
                     tile.copy(hasQueen = queensCoordinates.contains(tile.coordinates))
-                }.toPersistentList()
-            }.toPersistentList(),
+                }
+            },
         )
     }
 

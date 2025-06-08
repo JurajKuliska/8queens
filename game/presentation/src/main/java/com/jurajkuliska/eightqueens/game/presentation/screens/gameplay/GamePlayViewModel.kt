@@ -6,13 +6,17 @@ import com.jurajkuliska.eightqueens.game.domain.handler.BoardStateHandler
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
 import com.jurajkuliska.eightqueens.game.domain.usecase.GetBoardStateHandlerUseCase
+import com.jurajkuliska.eightqueens.game.presentation.model.BoardStateUi
+import com.jurajkuliska.eightqueens.game.presentation.model.toBoardTileUi
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -24,13 +28,17 @@ internal class GamePlayViewModel(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    private val errorTiles = MutableStateFlow<Set<Coordinates>>(emptySet())
     private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(boardSize = navArgs.boardSize)
-    val uiState: StateFlow<UiState> = boardStateHandler.board.map {
-        UiState(boardState = it)
+    val uiState: StateFlow<UiState> = combine(
+        boardStateHandler.board,
+        errorTiles
+    ) { board, errorTiles ->
+        UiState(boardState = board.setErrorTiles(errorTileCoordinates = errorTiles))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = UiState(BoardState(board = persistentListOf())),
+        initialValue = UiState(boardState = BoardStateUi(board = persistentListOf(), totalQueensToPlace = 0, queensLeft = 0)),
     )
 
     fun onTileTap(coordinates: Coordinates) {
@@ -48,8 +56,19 @@ internal class GamePlayViewModel(
     }
 
     data class UiState(
-        val boardState: BoardState,
+        val boardState: BoardStateUi,
     )
+
+    private fun BoardState.setErrorTiles(errorTileCoordinates: Set<Coordinates>) =
+        BoardStateUi(
+            board = board.map { row ->
+                row.map {
+                    it.toBoardTileUi(isError = errorTileCoordinates.contains(it.coordinates))
+                }.toPersistentList()
+            }.toPersistentList(),
+            totalQueensToPlace = totalQueensToPlace,
+            queensLeft = queensLeft,
+        )
 
     sealed interface UiEvent {
         data object NavigateBack : UiEvent
