@@ -12,6 +12,8 @@
     <string name="gameplay_screen_instructions">Place %1$d Queens on the board such that no two Queens are attacking one another.</string>
     <string name="gameplay_screen_queens_left">Queens left to place on the board: %1$d</string>
     <string name="gameplay_screen_restart_game">Restart Game</string>
+    <string name="gameplay_screen_pick_different_board">Pick Different Board</string>
+    <string name="gameplay_screen_winning_message">CONGRATULATIONS!\nYou found one of %1$d solutions.</string>
     <string name="general_back_button_content_description">Navigate Back</string>
     <string name="general_queen_content_description">Queen</string>
 </resources>

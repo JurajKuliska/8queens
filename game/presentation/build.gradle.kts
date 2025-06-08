@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.android)
     implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.konfetti)
 
     testImplementation(libs.junit)
     testImplementation(libs.google.truth)

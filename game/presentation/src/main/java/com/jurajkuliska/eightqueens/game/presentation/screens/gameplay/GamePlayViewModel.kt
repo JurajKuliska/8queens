@@ -31,16 +31,34 @@ internal class GamePlayViewModel(
     val uiEvent = _uiEvent.asSharedFlow()
 
     private val errorTiles = MutableStateFlow<Set<Coordinates>>(emptySet())
+    private val isWin = MutableStateFlow(false)
     private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(boardSize = navArgs.boardSize)
     val uiState: StateFlow<UiState> = combine(
         boardStateHandler.board,
-        errorTiles
-    ) { board, errorTiles ->
-        UiState(boardState = board.setErrorTiles(errorTileCoordinates = errorTiles))
+        errorTiles,
+        isWin,
+    ) { board, errorTiles, isWin ->
+        UiState(
+            boardState = board.setErrorTiles(
+                errorTileCoordinates = errorTiles,
+            ),
+            totalQueensToPlace = board.totalQueensToPlace,
+            queensLeft = board.queensLeft,
+            isWin = isWin,
+            allSolutionsCount = navArgs.allSolutionsCount,
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = UiState(boardState = BoardStateUi(board = persistentListOf(), totalQueensToPlace = 0, queensLeft = 0)),
+        initialValue = UiState(
+            boardState = BoardStateUi(
+                board = persistentListOf(),
+            ),
+            totalQueensToPlace = 0,
+            queensLeft = 0,
+            isWin = false,
+            allSolutionsCount = navArgs.allSolutionsCount,
+        ),
     )
 
     fun onTileTap(coordinates: Coordinates) {
@@ -55,12 +73,21 @@ internal class GamePlayViewModel(
                 }
             }
 
-            is QueenPlacementResult.Success -> Unit // no need to do anything
+            QueenPlacementResult.Success.AddedAndWin -> isWin.value = true
+            QueenPlacementResult.Success.Removed -> isWin.value = false
+            QueenPlacementResult.Success.Added -> Unit // no need to do anything
         }
     }
 
     fun onResetClick() {
+        isWin.value = false
         boardStateHandler.reset()
+    }
+
+    fun onPickDifferentBoardClick() {
+        viewModelScope.launch {
+            _uiEvent.emit(UiEvent.NavigateBack)
+        }
     }
 
     fun onBackClick() {
@@ -71,6 +98,10 @@ internal class GamePlayViewModel(
 
     data class UiState(
         val boardState: BoardStateUi,
+        val isWin: Boolean,
+        val totalQueensToPlace: Int,
+        val queensLeft: Int,
+        val allSolutionsCount: Int,
     )
 
     private fun BoardState.setErrorTiles(errorTileCoordinates: Set<Coordinates>) =
@@ -80,8 +111,6 @@ internal class GamePlayViewModel(
                     it.toBoardTileUi(isError = errorTileCoordinates.contains(it.coordinates))
                 }.toPersistentList()
             }.toPersistentList(),
-            totalQueensToPlace = totalQueensToPlace,
-            queensLeft = queensLeft,
         )
 
     sealed interface UiEvent {

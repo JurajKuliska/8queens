@@ -15,6 +15,7 @@ mockkVersion = "1.13.13"
 jUnitParamsVersion = "1.1.1"
 kotlinxCoroutinesTest = "1.8.0"
 turbineTest = "1.2.0"
+konfettiVersion = "2.0.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,7 @@ mockkAndroid = { group = "io.mockk", name = "mockk-android", version.ref = "mock
 jUnitParams = { group = "pl.pragmatists", name = "JUnitParams", version.ref = "jUnitParamsVersion" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 turbine-test = { group = "app.cash.turbine", name = "turbine", version.ref = "turbineTest" }
+konfetti = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "konfettiVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

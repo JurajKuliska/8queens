@@ -1,18 +1,24 @@
 package com.jurajkuliska.eightqueens.game.presentation.screens.gameplay
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -36,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,8 +58,13 @@ import com.jurajkuliska.eightqueens.ui.theme.TileDark
 import com.jurajkuliska.eightqueens.ui.theme.TileLight
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 import com.jurajkuliska.eightqueens.ui.R as uiR
 
@@ -76,12 +88,17 @@ internal fun GamePlayScreen(
             TopBar(onBackClick = viewModel::onBackClick)
         }
     ) {
-        Content(
-            modifier = Modifier.align(Alignment.Center),
-            uiState = uiState,
-            onTileTap = viewModel::onTileTap,
-            onResetClick = viewModel::onResetClick,
-        )
+        Box {
+            Content(
+                uiState = uiState,
+                onTileTap = viewModel::onTileTap,
+                onResetClick = viewModel::onResetClick,
+                onPickDifferentBoardClick = viewModel::onPickDifferentBoardClick,
+            )
+            if (uiState.isWin) {
+                CelebrationOverlay()
+            }
+        }
     }
 }
 
@@ -90,6 +107,7 @@ private fun Content(
     uiState: GamePlayViewModel.UiState,
     onTileTap: (Coordinates) -> Unit,
     onResetClick: () -> Unit,
+    onPickDifferentBoardClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var initialAlpha by remember { mutableFloatStateOf(0f) }
@@ -104,36 +122,64 @@ private fun Content(
     }
 
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier
-                .padding(all = Spacing.xxL)
-                .alpha(alpha = initialAlphaAnimation.value)
-                .offset(y = -initialOffsetAnimation.value),
-            text = stringResource(id = R.string.gameplay_screen_instructions, uiState.boardState.totalQueensToPlace),
-            textAlign = TextAlign.Center,
-        )
+        Box(modifier = Modifier.height(150.dp)) {
+            if (!uiState.isWin) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = Spacing.xxL)
+                        .align(Alignment.Center)
+                        .alpha(alpha = initialAlphaAnimation.value)
+                        .offset(y = -initialOffsetAnimation.value),
+                    text = stringResource(id = R.string.gameplay_screen_instructions, uiState.totalQueensToPlace),
+                    textAlign = TextAlign.Center,
+                )
+            }
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = Spacing.L)
+                    .align(Alignment.Center)
+                    .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy))
+                    .fillMaxWidth(if (uiState.isWin) 1f else 0f),
+                text = stringResource(id = R.string.gameplay_screen_winning_message, uiState.allSolutionsCount),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge.copy(lineBreak = LineBreak.Heading, color = MaterialTheme.colorScheme.tertiary),
+            )
+        }
         Board(
             modifier = Modifier.padding(all = Spacing.M),
             state = uiState.boardState,
             onTileTap = onTileTap,
         )
-        Text(
-            modifier = Modifier
-                .padding(all = Spacing.xxL)
-                .align(alignment = Alignment.CenterHorizontally)
-                .alpha(alpha = initialAlphaAnimation.value)
-                .offset(y = initialOffsetAnimation.value),
-            text = stringResource(id = R.string.gameplay_screen_queens_left, uiState.boardState.queensLeft)
-        )
-        Button(
+        if (!uiState.isWin) {
+            Text(
+                modifier = Modifier
+                    .padding(all = Spacing.xxL)
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .alpha(alpha = initialAlphaAnimation.value)
+                    .offset(y = initialOffsetAnimation.value),
+                text = stringResource(id = R.string.gameplay_screen_queens_left, uiState.queensLeft)
+            )
+        }
+        Row(
             modifier = Modifier
                 .padding(top = Spacing.xL)
                 .align(alignment = Alignment.CenterHorizontally)
                 .alpha(alpha = initialAlphaAnimation.value)
                 .offset(y = initialOffsetAnimation.value),
-            onClick = onResetClick,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(text = stringResource(id = R.string.gameplay_screen_restart_game))
+            Button(
+                modifier = Modifier.padding(end = Spacing.xS),
+                onClick = onResetClick,
+            ) {
+                Text(text = stringResource(id = R.string.gameplay_screen_restart_game))
+            }
+            Button(
+                modifier = Modifier.padding(start = Spacing.xS),
+                onClick = onPickDifferentBoardClick,
+            ) {
+                Text(text = stringResource(id = R.string.gameplay_screen_pick_different_board))
+            }
         }
     }
 }
@@ -247,6 +293,24 @@ private fun TopBar(onBackClick: () -> Unit) {
         }
     )
 }
+
+@Composable
+private fun CelebrationOverlay() {
+    KonfettiView(
+        modifier = Modifier.fillMaxSize(),
+        parties = (0..5).map { partySetup },
+    )
+}
+
+private val partySetup = Party(
+    speed = 0f,
+    maxSpeed = 30f,
+    damping = 0.9f,
+    spread = 360,
+    colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+    position = Position.Relative(0.5, 0.3),
+    emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100)
+)
 
 @Composable
 private fun UiEventObserver(

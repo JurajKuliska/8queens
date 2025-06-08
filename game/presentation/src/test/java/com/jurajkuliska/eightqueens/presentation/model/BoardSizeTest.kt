@@ -12,29 +12,61 @@ import org.junit.runner.RunWith
 internal class BoardSizeTest {
 
     @Test
-    @Parameters(method = "getSizeAndTitleTestData")
-    fun `test size and title of BoardSize enum`(testData: TestDataHolder) {
-        testData.input.run {
-            assertThat(size).isEqualTo(testData.expectedSize)
-            assertThat(title).isEqualTo(testData.expectedTitleResId)
+    @Parameters(method = "getSizeTestData")
+    fun `test size of BoardSize enum`(testData: TestDataHolder) {
+        assertThat(testData.input.size).isEqualTo(testData.expectedResult)
+    }
+
+    @Test
+    @Parameters(method = "getTitleTestData")
+    fun `test title of BoardSize enum`(testData: TestDataHolder) {
+        assertThat(testData.input.title).isEqualTo(testData.expectedResult)
+    }
+
+    @Test
+    @Parameters(method = "getAllSolutionsCountTestData")
+    fun `test allSolutionsCount of BoardSize enum`(testData: TestDataHolder) {
+        assertThat(testData.input.allSolutionsCount).isEqualTo(testData.expectedResult)
+    }
+
+    fun getSizeTestData() = BoardSize.entries.map { entry ->
+        when (entry) {
+            BoardSize.FourByFour -> 4
+            BoardSize.FiveByFive -> 5
+            BoardSize.SixBySix -> 6
+            BoardSize.SevenBySeven -> 7
+            BoardSize.EightByEight -> 8
+        }.let {
+            TestDataHolder(input = entry, expectedResult = it)
         }
     }
 
-    fun getSizeAndTitleTestData() = BoardSize.entries.map { entry ->
+    fun getTitleTestData() = BoardSize.entries.map { entry ->
         when (entry) {
-            BoardSize.FourByFour -> 4 to R.string.initial_screen_board_size_4_by_4
-            BoardSize.FiveByFive -> 5 to R.string.initial_screen_board_size_5_by_5
-            BoardSize.SixBySix -> 6 to R.string.initial_screen_board_size_6_by_6
-            BoardSize.SevenBySeven -> 7 to R.string.initial_screen_board_size_7_by_7
-            BoardSize.EightByEight -> 8 to R.string.initial_screen_board_size_8_by_8
+            BoardSize.FourByFour -> R.string.initial_screen_board_size_4_by_4
+            BoardSize.FiveByFive -> R.string.initial_screen_board_size_5_by_5
+            BoardSize.SixBySix -> R.string.initial_screen_board_size_6_by_6
+            BoardSize.SevenBySeven -> R.string.initial_screen_board_size_7_by_7
+            BoardSize.EightByEight -> R.string.initial_screen_board_size_8_by_8
         }.let {
-            TestDataHolder(input = entry, expectedSize = it.first, expectedTitleResId = it.second)
+            TestDataHolder(input = entry, expectedResult = it)
+        }
+    }
+
+    fun getAllSolutionsCountTestData() = BoardSize.entries.map { entry ->
+        when (entry) {
+            BoardSize.FourByFour -> 2
+            BoardSize.FiveByFive -> 10
+            BoardSize.SixBySix -> 4
+            BoardSize.SevenBySeven -> 40
+            BoardSize.EightByEight -> 92
+        }.let {
+            TestDataHolder(input = entry, expectedResult = it)
         }
     }
 
     data class TestDataHolder(
         val input: BoardSize,
-        val expectedSize: Int,
-        val expectedTitleResId: Int,
+        val expectedResult: Int,
     )
 }

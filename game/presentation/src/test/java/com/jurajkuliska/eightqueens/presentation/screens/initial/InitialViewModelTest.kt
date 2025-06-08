@@ -67,10 +67,11 @@ class InitialViewModelTest {
     fun `test onNext - without changing selection - verify correct UiEvent emitted`() = runTest {
         mockkObject(BoardSize.EightByEight)
         every { BoardSize.EightByEight.size } returns 44
+        every { BoardSize.EightByEight.allSolutionsCount } returns 21
         val sut = initSut()
         sut.uiEvent.test {
             sut.onNext()
-            assertThat(awaitItem()).isEqualTo(InitialViewModel.UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = 44)))
+            assertThat(awaitItem()).isEqualTo(InitialViewModel.UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = 44, allSolutionsCount = 21)))
         }
     }
 
@@ -78,6 +79,7 @@ class InitialViewModelTest {
     fun `test onNext - after changing selection - verify correct UiEvent emitted`() = runTest {
         mockkObject(BoardSize.FiveByFive)
         every { BoardSize.FiveByFive.size } returns 911
+        every { BoardSize.FiveByFive.allSolutionsCount } returns 654
         val sut = initSut()
         sut.uiState.test uiState@{
             sut.uiEvent.test uiEvent@{
@@ -87,7 +89,8 @@ class InitialViewModelTest {
                     .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = false, selectedOption = BoardSize.FiveByFive)))
 
                 sut.onNext()
-                assertThat(this@uiEvent.awaitItem()).isEqualTo(InitialViewModel.UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = 911)))
+                assertThat(this@uiEvent.awaitItem())
+                    .isEqualTo(InitialViewModel.UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = 911, allSolutionsCount = 654)))
             }
         }
     }
