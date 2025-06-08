@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.jurajkuliska.eightqueens.game.domain.handler.BoardStateHandler
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
+import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
 import com.jurajkuliska.eightqueens.game.domain.usecase.GetBoardStateHandlerUseCase
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardStateUi
 import com.jurajkuliska.eightqueens.game.presentation.model.toBoardTileUi
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,7 +44,19 @@ internal class GamePlayViewModel(
     )
 
     fun onTileTap(coordinates: Coordinates) {
-        boardStateHandler.placeQueen(coordinates = coordinates)
+        when (val result = boardStateHandler.placeQueen(coordinates = coordinates)) {
+            is QueenPlacementResult.Conflict -> viewModelScope.launch {
+                val tilesWithErrors = result.queen.let { it.attacking + it.coordinates }
+                (0..2).forEach {
+                    delay(200)
+                    errorTiles.value = tilesWithErrors
+                    delay(200)
+                    errorTiles.value = emptySet()
+                }
+            }
+
+            is QueenPlacementResult.Success -> Unit // no need to do anything
+        }
     }
 
     fun onResetClick() {

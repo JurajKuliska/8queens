@@ -1,7 +1,11 @@
 package com.jurajkuliska.eightqueens.game.presentation.screens.gameplay
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -51,6 +55,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
 import com.jurajkuliska.eightqueens.ui.R as uiR
+
+private const val ERROR_ANIMATION_LENGTH = 50
 
 @Composable
 internal fun GamePlayScreen(
@@ -197,6 +203,18 @@ private fun Tile(
             tint = PieceColor,
             contentDescription = stringResource(id = R.string.general_queen_content_description),
         )
+        AnimatedVisibility(
+            visible = tile.isError,
+            enter = fadeIn(animationSpec = tween(durationMillis = ERROR_ANIMATION_LENGTH)),
+            exit = fadeOut(animationSpec = tween(durationMillis = ERROR_ANIMATION_LENGTH))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.7f)
+                    .background(MaterialTheme.colorScheme.tertiary)
+            )
+        }
     }
 }
 
