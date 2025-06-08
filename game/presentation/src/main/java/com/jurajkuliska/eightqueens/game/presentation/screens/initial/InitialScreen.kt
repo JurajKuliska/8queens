@@ -82,9 +82,9 @@ internal fun InitialScreen(
                     .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
                 pickerState = uiState.boardSizePickerState,
                 onNext = viewModel::onNext,
-                onBoardSizeOpen = viewModel::onBoardSizeOpen,
-                onBoardSizePick = viewModel::onBoardSizePick,
-                onBoardSizeDismiss = viewModel::onBoardSizeDismiss,
+                onBoardSizePickerOpen = viewModel::onBoardSizePickerOpen,
+                onBoardSizePick = viewModel::onBoardSizePicked,
+                onBoardSizePickerDismiss = viewModel::onBoardSizePickerDismiss,
             )
         }
     }
@@ -117,9 +117,9 @@ private fun ColumnScope.ChooseDifficulty(
     pickerState: InitialViewModel.UiState.BoardSizePickerState,
     modifier: Modifier = Modifier,
     onNext: () -> Unit,
-    onBoardSizeOpen: () -> Unit,
+    onBoardSizePickerOpen: () -> Unit,
     onBoardSizePick: (BoardSize) -> Unit,
-    onBoardSizeDismiss: () -> Unit,
+    onBoardSizePickerDismiss: () -> Unit,
 ) {
     Column(
         modifier = modifier.align(Alignment.CenterHorizontally),
@@ -134,9 +134,9 @@ private fun ColumnScope.ChooseDifficulty(
 
         BoardSizePickerDropDown(
             pickerState = pickerState,
-            onBoardSizeOpen = onBoardSizeOpen,
+            onBoardSizePickerOpen = onBoardSizePickerOpen,
             onBoardSizePick = onBoardSizePick,
-            onBoardSizeDismiss = onBoardSizeDismiss,
+            onBoardSizePickerDismiss = onBoardSizePickerDismiss,
         )
 
         Button(
@@ -152,9 +152,9 @@ private fun ColumnScope.ChooseDifficulty(
 private fun BoardSizePickerDropDown(
     modifier: Modifier = Modifier,
     pickerState: InitialViewModel.UiState.BoardSizePickerState,
-    onBoardSizeOpen: () -> Unit,
+    onBoardSizePickerOpen: () -> Unit,
     onBoardSizePick: (BoardSize) -> Unit,
-    onBoardSizeDismiss: () -> Unit,
+    onBoardSizePickerDismiss: () -> Unit,
 ) {
     ExposedDropdownMenuBox(
         modifier = modifier
@@ -163,9 +163,9 @@ private fun BoardSizePickerDropDown(
         expanded = pickerState.isExpanded,
         onExpandedChange = {
             if (it) {
-                onBoardSizeOpen()
+                onBoardSizePickerOpen()
             } else {
-                onBoardSizeDismiss()
+                onBoardSizePickerDismiss()
             }
         }
     ) {
@@ -188,7 +188,7 @@ private fun BoardSizePickerDropDown(
         ExposedDropdownMenu(
             expanded = pickerState.isExpanded,
             onDismissRequest = {
-                onBoardSizeDismiss()
+                onBoardSizePickerDismiss()
             }
         ) {
             pickerState.options.forEach {

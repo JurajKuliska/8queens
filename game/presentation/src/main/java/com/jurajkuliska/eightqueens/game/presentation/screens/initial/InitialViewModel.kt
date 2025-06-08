@@ -41,16 +41,16 @@ internal class InitialViewModel : ViewModel() {
         )
     )
 
-    fun onBoardSizePick(boardSize: BoardSize) {
+    fun onBoardSizePicked(boardSize: BoardSize) {
         isBoardSizePickerOpened.value = false
         this.boardSize.value = boardSize
     }
 
-    fun onBoardSizeDismiss() {
+    fun onBoardSizePickerDismiss() {
         isBoardSizePickerOpened.value = false
     }
 
-    fun onBoardSizeOpen() {
+    fun onBoardSizePickerOpen() {
         isBoardSizePickerOpened.value = true
     }
 

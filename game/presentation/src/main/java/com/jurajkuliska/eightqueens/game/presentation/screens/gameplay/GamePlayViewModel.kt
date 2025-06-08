@@ -23,7 +23,7 @@ internal class GamePlayViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = UiState(BoardState(board = persistentListOf())),
+        initialValue = UiState(BoardState(board = persistentListOf(), queensLeft = navArgs.boardSize)),
     )
 
     data class UiState(

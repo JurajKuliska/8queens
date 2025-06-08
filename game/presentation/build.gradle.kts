@@ -42,4 +42,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.google.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine.test)
 }
