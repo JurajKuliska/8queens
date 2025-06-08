@@ -23,6 +23,7 @@ android {
 
 dependencies {
 
+    implementation(projects.game.domain)
     implementation(projects.navigation)
     implementation(projects.ui)
 
@@ -37,6 +38,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.android)
+    implementation(libs.kotlinx.collections.immutable)
 
     testImplementation(libs.junit)
     testImplementation(libs.google.truth)

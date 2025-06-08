@@ -20,7 +20,11 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.koin.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.google.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.jUnitParams)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
