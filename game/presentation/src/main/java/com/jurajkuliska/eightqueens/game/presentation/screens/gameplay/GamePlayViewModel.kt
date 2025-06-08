@@ -102,7 +102,9 @@ internal class GamePlayViewModel(
         val totalQueensToPlace: Int,
         val queensLeft: Int,
         val allSolutionsCount: Int,
-    )
+    ) {
+        val isRestartGameButtonEnabled = totalQueensToPlace > queensLeft
+    }
 
     private fun BoardState.setErrorTiles(errorTileCoordinates: Set<Coordinates>) =
         BoardStateUi(

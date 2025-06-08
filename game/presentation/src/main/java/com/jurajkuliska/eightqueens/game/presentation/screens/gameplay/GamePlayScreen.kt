@@ -170,6 +170,7 @@ private fun Content(
         ) {
             Button(
                 modifier = Modifier.padding(end = Spacing.xS),
+                enabled = uiState.isRestartGameButtonEnabled,
                 onClick = onResetClick,
             ) {
                 Text(text = stringResource(id = R.string.gameplay_screen_restart_game))
