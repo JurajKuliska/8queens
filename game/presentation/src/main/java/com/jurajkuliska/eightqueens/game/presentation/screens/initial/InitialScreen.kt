@@ -77,7 +77,7 @@ internal fun InitialScreen(
             )
             ChooseDifficulty(
                 modifier = Modifier
-                    .padding(top = 120.dp)
+                    .padding(top = 60.dp)
                     .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
                 pickerState = uiState.boardSizePickerState,
                 onNext = viewModel::onNext,
@@ -126,7 +126,10 @@ private fun ColumnScope.ChooseDifficulty(
         verticalArrangement = Arrangement.spacedBy(space = Spacing.L)
     ) {
 
-        Text(text = stringResource(id = R.string.initial_screen_choose_board_size_title))
+        Text(
+            text = stringResource(id = R.string.initial_screen_choose_board_size_title),
+            style = MaterialTheme.typography.headlineSmall,
+        )
 
         BoardSizePickerDropDown(
             pickerState = pickerState,
