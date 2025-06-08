@@ -54,7 +54,6 @@ internal class BoardStateHandlerImplTest {
                         getBoardRow1().toPersistentList(),
                         getBoardRow0().toPersistentList(),
                     ),
-                    queensLeft = 3,
                 )
             )
             assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(QueenPlacementResult.Success.Added)
@@ -76,7 +75,6 @@ internal class BoardStateHandlerImplTest {
                         ).toPersistentList(),
                         getBoardRow0().toPersistentList(),
                     ),
-                    queensLeft = 2,
                 )
             )
             assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
@@ -100,7 +98,6 @@ internal class BoardStateHandlerImplTest {
                             column2 = getBoardRow0()[2].copy(hasQueen = true)
                         ).toPersistentList(),
                     ),
-                    queensLeft = 1,
                 )
             )
             assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.AddedAndWin)
@@ -126,7 +123,6 @@ internal class BoardStateHandlerImplTest {
                             column2 = getBoardRow0()[2].copy(hasQueen = true)
                         ).toPersistentList(),
                     ),
-                    queensLeft = 0,
                 )
             )
         }
@@ -171,7 +167,6 @@ internal class BoardStateHandlerImplTest {
                             column2 = getBoardRow0()[2].copy(hasQueen = true)
                         ).toPersistentList(),
                     ),
-                    queensLeft = 2,
                 )
             )
             assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Removed)
@@ -191,7 +186,6 @@ internal class BoardStateHandlerImplTest {
                         getBoardRow1().toPersistentList(),
                         getBoardRow0().toPersistentList(),
                     ),
-                    queensLeft = 3,
                 )
             )
             assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.Added)
@@ -213,7 +207,6 @@ internal class BoardStateHandlerImplTest {
                         getBoardRow1().toPersistentList(),
                         getBoardRow0().toPersistentList(),
                     ),
-                    queensLeft = 2,
                 )
             )
         }
@@ -244,7 +237,6 @@ internal class BoardStateHandlerImplTest {
                         getBoardRow1().toPersistentList(),
                         getBoardRow0().toPersistentList(),
                     ),
-                    queensLeft = 3,
                 )
             )
             listOf(
@@ -294,7 +286,6 @@ internal class BoardStateHandlerImplTest {
 
     private companion object {
         val boardStateDefault = BoardState(
-            queensLeft = 4,
             board = persistentListOf(
                 getBoardRow3().toPersistentList(),
                 getBoardRow2().toPersistentList(),

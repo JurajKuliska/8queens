@@ -56,7 +56,7 @@ internal class InitialViewModel : ViewModel() {
 
     fun onNext() {
         viewModelScope.launch {
-            _uiEvent.emit(UiEvent.Next(route = GameRoute.GamePlay(boardSize = boardSize.value.size)))
+            _uiEvent.emit(UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = boardSize.value.size)))
         }
     }
 
@@ -72,6 +72,6 @@ internal class InitialViewModel : ViewModel() {
     }
 
     sealed interface UiEvent {
-        data class Next(val route: GameRoute.GamePlay) : UiEvent
+        data class NavigateToGamePlay(val route: GameRoute.GamePlay) : UiEvent
     }
 }

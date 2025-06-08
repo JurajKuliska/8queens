@@ -9,4 +9,8 @@
     <string name="initial_screen_board_size_6_by_6">6 × 6</string>
     <string name="initial_screen_board_size_7_by_7">7 × 7</string>
     <string name="initial_screen_board_size_8_by_8">8 × 8</string>
+    <string name="gameplay_screen_instructions">Place %1$d Queens on the board such that no two Queens are attacking one another.</string>
+    <string name="gameplay_screen_queens_left">Queens left to place on the board: %1$d</string>
+    <string name="gameplay_screen_restart_game">Restart Game</string>
+    <string name="general_back_button_content_description">Navigate Back</string>
 </resources>

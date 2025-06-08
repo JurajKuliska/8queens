@@ -23,7 +23,7 @@ fun NavGraphBuilder.gameNavGraph(navController: NavController) =
             val navArgs: GameRoute.GamePlay = backStackEntry.toRoute()
             GamePlayScreen(
                 navArgs = navArgs,
-                onNext = { navController.navigate(GameRoute.Congratulations(message = "Congrats!")) },
+                onBack = { navController.popBackStack() },
             )
         }
         composable<GameRoute.Congratulations> { backStackEntry ->
@@ -34,7 +34,7 @@ fun NavGraphBuilder.gameNavGraph(navController: NavController) =
                 onFinish = {
                     navController.popBackStack(
                         route = GameRoute.Initial,
-                        inclusive = false
+                        inclusive = false,
                     )
                 }
             )

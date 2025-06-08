@@ -247,7 +247,7 @@ private fun UiEventObserver(
     LaunchedEffect(key1 = Unit) {
         uiEventFlow.collect { uiEvent ->
             when (uiEvent) {
-                is InitialViewModel.UiEvent.Next -> onNext(uiEvent.route)
+                is InitialViewModel.UiEvent.NavigateToGamePlay -> onNext(uiEvent.route)
             }
         }
     }

@@ -70,7 +70,7 @@ class InitialViewModelTest {
         val sut = initSut()
         sut.uiEvent.test {
             sut.onNext()
-            assertThat(awaitItem()).isEqualTo(InitialViewModel.UiEvent.Next(route = GameRoute.GamePlay(boardSize = 44)))
+            assertThat(awaitItem()).isEqualTo(InitialViewModel.UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = 44)))
         }
     }
 
@@ -87,7 +87,7 @@ class InitialViewModelTest {
                     .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = false, selectedOption = BoardSize.FiveByFive)))
 
                 sut.onNext()
-                assertThat(this@uiEvent.awaitItem()).isEqualTo(InitialViewModel.UiEvent.Next(route = GameRoute.GamePlay(boardSize = 911)))
+                assertThat(this@uiEvent.awaitItem()).isEqualTo(InitialViewModel.UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = 911)))
             }
         }
     }

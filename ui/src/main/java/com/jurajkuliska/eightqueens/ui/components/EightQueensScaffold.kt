@@ -9,8 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun EightQueensScaffold(content: @Composable BoxScope.() -> Unit) {
-    Scaffold {
+fun EightQueensScaffold(
+    topBar: @Composable () -> Unit = {},
+    content: @Composable BoxScope.() -> Unit,
+) {
+    Scaffold(
+        topBar = topBar,
+    ) {
         Box(
             modifier = Modifier
                 .padding(it)

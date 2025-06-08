@@ -35,7 +35,6 @@ internal class BoardStateHandlerImpl(
                     tile.copy(hasQueen = queensCoordinates.contains(tile.coordinates))
                 }.toPersistentList()
             }.toPersistentList(),
-            queensLeft = boardSize - queens.size,
         )
     }
 
