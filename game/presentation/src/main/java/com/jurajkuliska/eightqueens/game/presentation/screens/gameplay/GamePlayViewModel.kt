@@ -62,8 +62,7 @@ internal class GamePlayViewModel(
     )
 
     fun onTileTap(coordinates: Coordinates) {
-        errorJob?.cancel()
-        errorTiles.value = emptySet()
+        cancelErrorTilesAnimation()
         when (val result = boardStateHandler.placeQueen(coordinates = coordinates)) {
             is QueenPlacementResult.Conflict -> {
                 errorJob = viewModelScope.launch {
@@ -82,6 +81,7 @@ internal class GamePlayViewModel(
     }
 
     fun onResetClick() {
+        cancelErrorTilesAnimation()
         boardStateHandler.reset()
     }
 
@@ -95,6 +95,11 @@ internal class GamePlayViewModel(
         viewModelScope.launch {
             _uiEvent.emit(UiEvent.NavigateBack)
         }
+    }
+
+    private fun cancelErrorTilesAnimation() {
+        errorJob?.cancel()
+        errorTiles.value = emptySet()
     }
 
     data class UiState(

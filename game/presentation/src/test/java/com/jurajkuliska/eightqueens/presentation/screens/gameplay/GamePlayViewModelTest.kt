@@ -197,6 +197,92 @@ internal class GamePlayViewModelTest {
     }
 
     @Test
+    fun test_onTileTap_afterPlacingQueenWithError_cancels_previousError() =
+        testCancelPreviousErrorAfterFunctionCall {
+            val coordinates = Coordinates(rowIndex = 2, columnIndex = 2)
+            every { boardStateHandlerMock.placeQueen(coordinates = coordinates) } returns QueenPlacementResult.Success.Added
+            it.onTileTap(coordinates = coordinates)
+            verify(exactly = 1) { boardStateHandlerMock.placeQueen(coordinates = coordinates) }
+        }
+
+    @Test
+    fun test_onResetClick_afterPlacingQueenWithError_cancels_previousError() =
+        testCancelPreviousErrorAfterFunctionCall {
+            every { boardStateHandlerMock.reset() } just Runs
+            it.onResetClick()
+            verify(exactly = 1) { boardStateHandlerMock.reset() }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun testCancelPreviousErrorAfterFunctionCall(function: (GamePlayViewModel) -> Unit) = runTest {
+        val queenCoordinates = Coordinates(rowIndex = 1, columnIndex = 1)
+        every {
+            boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
+        } returns QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), queenCoordinates))
+        every { getBoardStateHandlerUseCaseMock(boardSize = navArgs.boardSize) } returns boardStateHandlerMock
+        val sut = initSut(navArgs = navArgs.copy(allSolutionsCount = 45))
+
+        sut.uiState.test {
+            assertThat(awaitItem()).isEqualTo(
+                GamePlayViewModel.UiState(
+                    boardState = boardStateUiDefault,
+                    isWin = false,
+                    totalQueensToPlace = 4,
+                    queensLeft = 4,
+                    allSolutionsCount = 45,
+                )
+            )
+
+            boardFlow.value = BoardState(
+                board = getBoardDefinitionSize4(
+                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                ),
+            )
+
+            val uiStateWithoutErrors = GamePlayViewModel.UiState(
+                boardState = BoardStateUi(
+                    board = getBoardDefinitionSize4Ui(
+                        row3 = getBoardRow3Ui(column1 = getBoardRow3Ui()[1].copy(hasQueen = true)),
+                        row1 = getBoardRow1Ui(column0 = getBoardRow1Ui()[0].copy(hasQueen = true)),
+                    )
+                ),
+                isWin = false,
+                totalQueensToPlace = 4,
+                queensLeft = 2,
+                allSolutionsCount = 45,
+            )
+            val uiStateWithErrors = GamePlayViewModel.UiState(
+                boardState = BoardStateUi(
+                    board = getBoardDefinitionSize4Ui(
+                        row3 = getBoardRow3Ui(column1 = getBoardRow3Ui()[1].copy(hasQueen = true, isError = true)),
+                        row1 = getBoardRow1Ui(column0 = getBoardRow1Ui()[0].copy(hasQueen = true), column1 = getBoardRow1Ui()[1].copy(isError = true)),
+                    )
+                ),
+                isWin = false,
+                totalQueensToPlace = 4,
+                queensLeft = 2,
+                allSolutionsCount = 45,
+            )
+
+            assertThat(awaitItem()).isEqualTo(uiStateWithoutErrors)
+
+            sut.onTileTap(coordinates = queenCoordinates)
+            expectNoEvents()
+            advanceTimeBy(199)
+            expectNoEvents()
+            advanceTimeBy(1)
+            assertThat(awaitItem()).isEqualTo(uiStateWithErrors)
+            function(sut)
+            assertThat(awaitItem()).isEqualTo(uiStateWithoutErrors)
+
+            verify(exactly = 1) {
+                boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
+            }
+        }
+    }
+
+    @Test
     fun test_onTileTap_placeQueen_returns_Success_Added() = runTest {
         val coordinatesMock = mockk<Coordinates>()
         every { boardStateHandlerMock.placeQueen(coordinates = coordinatesMock) } returns QueenPlacementResult.Success.Added
