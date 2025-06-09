@@ -76,7 +76,8 @@ internal class GamePlayViewModel(
             }
 
             QueenPlacementResult.Success.Removed,
-            QueenPlacementResult.Success.Added -> Unit // no need to do anything
+            QueenPlacementResult.Success.Added,
+                -> Unit // no need to do anything
         }
     }
 
