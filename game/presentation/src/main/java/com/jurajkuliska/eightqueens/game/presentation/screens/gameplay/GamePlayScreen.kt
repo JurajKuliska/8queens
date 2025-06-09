@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
@@ -74,6 +75,7 @@ private const val ERROR_ANIMATION_LENGTH = 50
 internal fun GamePlayScreen(
     navArgs: GameRoute.GamePlay,
     onBack: () -> Unit,
+    onRestartGame: () -> Unit,
 ) {
     val viewModel = koinViewModel<GamePlayViewModel> { parametersOf(navArgs) }
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -81,6 +83,7 @@ internal fun GamePlayScreen(
     UiEventObserver(
         uiEventFlow = viewModel.uiEvent,
         onNavigateBack = onBack,
+        onRestartGame = onRestartGame,
     )
 
     EightQueensScaffold(
@@ -88,12 +91,28 @@ internal fun GamePlayScreen(
             TopBar(onBackClick = viewModel::onBackClick)
         }
     ) {
+        var initialAlpha by remember { mutableFloatStateOf(0f) }
+        val initialAlphaAnimation = animateFloatAsState(initialAlpha)
+        var initialOffset by remember { mutableStateOf(40.dp) }
+        val initialOffsetAnimation = animateDpAsState(initialOffset)
+
+        LaunchedEffect(key1 = Unit) {
+            delay(500)
+            initialAlpha = 1f
+            initialOffset = 0.dp
+        }
+
+        val contentDataHolder = ContentDataHolder(
+            uiState = uiState,
+            initialAlphaAnimationValue = initialAlphaAnimation.value,
+            initialOffsetAnimationValue = initialOffsetAnimation.value,
+            onTileTap = viewModel::onTileTap,
+            onResetClick = viewModel::onResetClick,
+            onPickDifferentBoardClick = viewModel::onPickDifferentBoardClick,
+        )
         Box {
-            Content(
-                uiState = uiState,
-                onTileTap = viewModel::onTileTap,
-                onResetClick = viewModel::onResetClick,
-                onPickDifferentBoardClick = viewModel::onPickDifferentBoardClick,
+            contentDataHolder.PortraitContent(
+
             )
             if (uiState.isWin) {
                 CelebrationOverlay()
@@ -103,46 +122,23 @@ internal fun GamePlayScreen(
 }
 
 @Composable
-private fun Content(
-    uiState: GamePlayViewModel.UiState,
-    onTileTap: (Coordinates) -> Unit,
-    onResetClick: () -> Unit,
-    onPickDifferentBoardClick: () -> Unit,
+private fun ContentDataHolder.PortraitContent(
     modifier: Modifier = Modifier,
 ) {
-    var initialAlpha by remember { mutableFloatStateOf(0f) }
-    val initialAlphaAnimation = animateFloatAsState(initialAlpha)
-    var initialOffset by remember { mutableStateOf(40.dp) }
-    val initialOffsetAnimation = animateDpAsState(initialOffset)
-
-    LaunchedEffect(key1 = Unit) {
-        delay(500)
-        initialAlpha = 1f
-        initialOffset = 0.dp
-    }
-
     Column(modifier = modifier) {
         Box(modifier = Modifier.height(150.dp)) {
             if (!uiState.isWin) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = Spacing.xxL)
-                        .align(Alignment.Center)
-                        .alpha(alpha = initialAlphaAnimation.value)
-                        .offset(y = -initialOffsetAnimation.value),
-                    text = stringResource(id = R.string.gameplay_screen_instructions, uiState.totalQueensToPlace),
-                    textAlign = TextAlign.Center,
+                InstructionsText(
+                    modifier = Modifier.align(Alignment.Center),
+                    totalQueensToPlace = uiState.totalQueensToPlace,
+                    initialAlphaAnimationValue = initialAlphaAnimationValue,
+                    initialOffsetAnimationValue = initialOffsetAnimationValue,
                 )
             }
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = Spacing.L)
-                    .align(Alignment.Center)
-                    .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy))
-                    .fillMaxWidth(if (uiState.isWin) 1f else 0f),
-                text = stringResource(id = R.string.gameplay_screen_winning_message, uiState.allSolutionsCount),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge.copy(lineBreak = LineBreak.Heading, color = MaterialTheme.colorScheme.tertiary),
+            WinningText(
+                modifier = Modifier.align(Alignment.Center),
+                isWin = uiState.isWin,
+                allSolutionsCount = uiState.allSolutionsCount
             )
         }
         Board(
@@ -151,36 +147,102 @@ private fun Content(
             onTileTap = onTileTap,
         )
         if (!uiState.isWin) {
-            Text(
-                modifier = Modifier
-                    .padding(all = Spacing.xxL)
-                    .align(alignment = Alignment.CenterHorizontally)
-                    .alpha(alpha = initialAlphaAnimation.value)
-                    .offset(y = initialOffsetAnimation.value),
-                text = stringResource(id = R.string.gameplay_screen_queens_left, uiState.queensLeft)
+            QueensLeftText(
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+                queensLeft = uiState.queensLeft,
+                initialAlphaAnimationValue = initialAlphaAnimationValue,
+                initialOffsetAnimationValue = initialOffsetAnimationValue,
             )
         }
-        Row(
-            modifier = Modifier
-                .padding(top = Spacing.xL)
-                .align(alignment = Alignment.CenterHorizontally)
-                .alpha(alpha = initialAlphaAnimation.value)
-                .offset(y = initialOffsetAnimation.value),
-            horizontalArrangement = Arrangement.SpaceBetween,
+        ControlButtons(
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            isRestartGameButtonEnabled = uiState.isRestartGameButtonEnabled,
+            initialAlphaAnimationValue = initialAlphaAnimationValue,
+            initialOffsetAnimationValue = initialOffsetAnimationValue,
+            onResetClick = onResetClick,
+            onPickDifferentBoardClick = onPickDifferentBoardClick,
+        )
+    }
+}
+
+@Composable
+private fun InstructionsText(
+    modifier: Modifier = Modifier,
+    totalQueensToPlace: Int,
+    initialAlphaAnimationValue: Float,
+    initialOffsetAnimationValue: Dp,
+) {
+    Text(
+        modifier = modifier
+            .padding(horizontal = Spacing.xxL)
+            .alpha(alpha = initialAlphaAnimationValue)
+            .offset(y = -initialOffsetAnimationValue),
+        text = stringResource(id = R.string.gameplay_screen_instructions, totalQueensToPlace),
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+private fun WinningText(
+    modifier: Modifier = Modifier,
+    isWin: Boolean,
+    allSolutionsCount: Int,
+) {
+    Text(
+        modifier = modifier
+            .padding(horizontal = Spacing.L)
+            .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy))
+            .fillMaxWidth(if (isWin) 1f else 0f),
+        text = stringResource(id = R.string.gameplay_screen_winning_message, allSolutionsCount),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.titleLarge.copy(lineBreak = LineBreak.Heading, color = MaterialTheme.colorScheme.tertiary),
+    )
+}
+
+@Composable
+private fun QueensLeftText(
+    modifier: Modifier = Modifier,
+    queensLeft: Int,
+    initialAlphaAnimationValue: Float,
+    initialOffsetAnimationValue: Dp,
+) {
+    Text(
+        modifier = modifier
+            .padding(all = Spacing.xxL)
+            .alpha(alpha = initialAlphaAnimationValue)
+            .offset(y = initialOffsetAnimationValue),
+        text = stringResource(id = R.string.gameplay_screen_queens_left, queensLeft)
+    )
+}
+
+@Composable
+private fun ControlButtons(
+    modifier: Modifier = Modifier,
+    isRestartGameButtonEnabled: Boolean,
+    initialAlphaAnimationValue: Float,
+    initialOffsetAnimationValue: Dp,
+    onResetClick: () -> Unit,
+    onPickDifferentBoardClick: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .padding(top = Spacing.xL)
+            .alpha(alpha = initialAlphaAnimationValue)
+            .offset(y = initialOffsetAnimationValue),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Button(
+            modifier = Modifier.padding(end = Spacing.xS),
+            enabled = isRestartGameButtonEnabled,
+            onClick = onResetClick,
         ) {
-            Button(
-                modifier = Modifier.padding(end = Spacing.xS),
-                enabled = uiState.isRestartGameButtonEnabled,
-                onClick = onResetClick,
-            ) {
-                Text(text = stringResource(id = R.string.gameplay_screen_restart_game))
-            }
-            Button(
-                modifier = Modifier.padding(start = Spacing.xS),
-                onClick = onPickDifferentBoardClick,
-            ) {
-                Text(text = stringResource(id = R.string.gameplay_screen_pick_different_board))
-            }
+            Text(text = stringResource(id = R.string.gameplay_screen_restart_game))
+        }
+        Button(
+            modifier = Modifier.padding(start = Spacing.xS),
+            onClick = onPickDifferentBoardClick,
+        ) {
+            Text(text = stringResource(id = R.string.gameplay_screen_pick_different_board))
         }
     }
 }
@@ -317,12 +379,23 @@ private val partySetup = Party(
 private fun UiEventObserver(
     uiEventFlow: Flow<GamePlayViewModel.UiEvent>,
     onNavigateBack: () -> Unit,
+    onRestartGame: () -> Unit,
 ) {
     LaunchedEffect(key1 = Unit) {
         uiEventFlow.collect { uiEvent ->
             when (uiEvent) {
                 is GamePlayViewModel.UiEvent.NavigateBack -> onNavigateBack()
+                is GamePlayViewModel.UiEvent.RestartGame -> onRestartGame()
             }
         }
     }
 }
+
+private data class ContentDataHolder(
+    val uiState: GamePlayViewModel.UiState,
+    val initialAlphaAnimationValue: Float,
+    val initialOffsetAnimationValue: Dp,
+    val onTileTap: (Coordinates) -> Unit,
+    val onResetClick: () -> Unit,
+    val onPickDifferentBoardClick: () -> Unit,
+)

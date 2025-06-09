@@ -369,7 +369,7 @@ internal class GamePlayViewModelTest {
         val sut = initSut()
         sut.uiEvent.test {
             sut.onPickDifferentBoardClick()
-            assertThat(awaitItem()).isEqualTo(GamePlayViewModel.UiEvent.NavigateBack)
+            assertThat(awaitItem()).isEqualTo(GamePlayViewModel.UiEvent.RestartGame)
         }
     }
 

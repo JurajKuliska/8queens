@@ -88,7 +88,7 @@ internal class GamePlayViewModel(
 
     fun onPickDifferentBoardClick() {
         viewModelScope.launch {
-            _uiEvent.emit(UiEvent.NavigateBack)
+            _uiEvent.emit(UiEvent.RestartGame)
         }
     }
 
@@ -124,5 +124,6 @@ internal class GamePlayViewModel(
 
     sealed interface UiEvent {
         data object NavigateBack : UiEvent
+        data object RestartGame : UiEvent
     }
 }

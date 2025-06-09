@@ -23,6 +23,7 @@ fun NavGraphBuilder.gameNavGraph(navController: NavController) =
             GamePlayScreen(
                 navArgs = navArgs,
                 onBack = { navController.popBackStack() },
+                onRestartGame = { navController.popBackStack(GameRoute.Initial, inclusive = false) },
             )
         }
     }
