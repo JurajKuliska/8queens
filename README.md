@@ -5,10 +5,14 @@ This is a simple app where a user can play a so call 8-Queens Puzzle Game. The g
 
 ## Features:
 The app provides options to pick a board size from 4 to 8 but if necessary is very easily extensible to higher board sizes as long as the screen is large enough to render them.
+
 The then starts a game and can place Queens on the board or remove them. Every queen placement is validated and if there's a conflicting Queen already on the board the user is visually shown the conflict and the Queen isn't placed on the board.
+
 After finding one of the solutions to the game, the user is presented with a congratulations screen acompanied by confetti animation.
+
 The whole app utilizes some easy to implement Compose animations to make it look a bit more alive.
-There's a support for both portrait and landscape orientation although that would probably need a bit more tweaking to be working well with all screen sizes and also split screen.
+
+There's a support for both portrait and landscape orientation although that would probably need a bit more tweaking to be working well with all screen sizes (especially foldables that are close to 1to1 ratio) and also split screen.
 
 ## Build:
 After cloning the repository, there's no particular setup necessary besides Gradle sync. After that the app can be run using a command:
