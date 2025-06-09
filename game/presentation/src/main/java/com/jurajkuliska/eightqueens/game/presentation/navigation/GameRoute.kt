@@ -10,7 +10,4 @@ sealed class GameRoute {
 
     @Serializable
     data class GamePlay(val boardSize: Int, val allSolutionsCount: Int) : GameRoute()
-
-    @Serializable
-    data class Congratulations(val message: String) : GameRoute()
 }

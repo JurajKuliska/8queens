@@ -86,7 +86,7 @@ internal class BoardStateHandlerImplTest {
                     ),
                 )
             )
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.AddedAndWin)
+            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][Q][ ]
              *  1 [Q][ ][ ][ ]
@@ -243,7 +243,7 @@ internal class BoardStateHandlerImplTest {
             skipItems(1)
             assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.AddedAndWin)
+            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.Added)
             skipItems(1)
             sut.reset()
             assertThat(awaitItem()).isEqualTo(boardStateDefault)

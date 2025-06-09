@@ -45,11 +45,7 @@ internal class BoardStateHandlerImpl(
             val queen = Queen(coordinates = coordinates, boardSize = boardSize)
             if (coordinates.canPlaceQueen()) {
                 queens.value = queens.value + queen
-                if (queens.value.size == boardSize) {
-                    QueenPlacementResult.Success.AddedAndWin
-                } else {
-                    QueenPlacementResult.Success.Added
-                }
+                QueenPlacementResult.Success.Added
             } else {
                 QueenPlacementResult.Conflict(queen = queen)
             }

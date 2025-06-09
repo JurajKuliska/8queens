@@ -5,4 +5,5 @@ data class BoardState(
 ) {
     val totalQueensToPlace = board.size
     val queensLeft = totalQueensToPlace - board.flatten().count { it.hasQueen }
+    val isWin = queensLeft == 0
 }

@@ -31,20 +31,18 @@ internal class GamePlayViewModel(
     val uiEvent = _uiEvent.asSharedFlow()
 
     private val errorTiles = MutableStateFlow<Set<Coordinates>>(emptySet())
-    private val isWin = MutableStateFlow(false)
     private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(boardSize = navArgs.boardSize)
     val uiState: StateFlow<UiState> = combine(
         boardStateHandler.board,
         errorTiles,
-        isWin,
-    ) { board, errorTiles, isWin ->
+    ) { board, errorTiles ->
         UiState(
             boardState = board.setErrorTiles(
                 errorTileCoordinates = errorTiles,
             ),
             totalQueensToPlace = board.totalQueensToPlace,
             queensLeft = board.queensLeft,
-            isWin = isWin,
+            isWin = board.isWin,
             allSolutionsCount = navArgs.allSolutionsCount,
         )
     }.stateIn(
@@ -65,7 +63,7 @@ internal class GamePlayViewModel(
         when (val result = boardStateHandler.placeQueen(coordinates = coordinates)) {
             is QueenPlacementResult.Conflict -> viewModelScope.launch {
                 val tilesWithErrors = result.queen.let { it.attacking + it.coordinates }
-                (0..2).forEach {
+                repeat(3) {
                     delay(200)
                     errorTiles.value = tilesWithErrors
                     delay(200)
@@ -73,14 +71,12 @@ internal class GamePlayViewModel(
                 }
             }
 
-            QueenPlacementResult.Success.AddedAndWin -> isWin.value = true
-            QueenPlacementResult.Success.Removed -> isWin.value = false
+            QueenPlacementResult.Success.Removed,
             QueenPlacementResult.Success.Added -> Unit // no need to do anything
         }
     }
 
     fun onResetClick() {
-        isWin.value = false
         boardStateHandler.reset()
     }
 

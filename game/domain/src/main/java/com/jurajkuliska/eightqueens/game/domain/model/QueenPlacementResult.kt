@@ -5,6 +5,5 @@ sealed interface QueenPlacementResult {
     enum class Success : QueenPlacementResult {
         Added,
         Removed,
-        AddedAndWin,
     }
 }
