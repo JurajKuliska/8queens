@@ -12,6 +12,7 @@ import com.jurajkuliska.eightqueens.game.presentation.model.toBoardTileUi
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ internal class GamePlayViewModel(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    private var errorJob: Job? = null
     private val errorTiles = MutableStateFlow<Set<Coordinates>>(emptySet())
     private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(boardSize = navArgs.boardSize)
     val uiState: StateFlow<UiState> = combine(
@@ -60,14 +62,18 @@ internal class GamePlayViewModel(
     )
 
     fun onTileTap(coordinates: Coordinates) {
+        errorJob?.cancel()
+        errorTiles.value = emptySet()
         when (val result = boardStateHandler.placeQueen(coordinates = coordinates)) {
-            is QueenPlacementResult.Conflict -> viewModelScope.launch {
-                val tilesWithErrors = result.queen.let { it.attacking + it.coordinates }
-                repeat(3) {
-                    delay(200)
-                    errorTiles.value = tilesWithErrors
-                    delay(200)
-                    errorTiles.value = emptySet()
+            is QueenPlacementResult.Conflict -> {
+                errorJob = viewModelScope.launch {
+                    val tilesWithErrors = result.queen.let { it.attacking + it.coordinates }.intersect(uiState.value.getCoordinatesWithQueens())
+                    repeat(3) {
+                        delay(200)
+                        errorTiles.value = tilesWithErrors + coordinates
+                        delay(200)
+                        errorTiles.value = emptySet()
+                    }
                 }
             }
 
@@ -75,6 +81,8 @@ internal class GamePlayViewModel(
             QueenPlacementResult.Success.Added -> Unit // no need to do anything
         }
     }
+
+    private fun UiState.getCoordinatesWithQueens() = uiState.value.boardState.board.flatten().filter { it.hasQueen }.map { it.coordinates }
 
     fun onResetClick() {
         boardStateHandler.reset()

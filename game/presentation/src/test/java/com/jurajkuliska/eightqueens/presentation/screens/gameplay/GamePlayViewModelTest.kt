@@ -126,16 +126,16 @@ internal class GamePlayViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun test_onTileTap_placeQueen_returns_Conflict() = runTest {
-        val coordinatesMock = mockk<Coordinates>()
+        val queenCoordinates = Coordinates(rowIndex = 1, columnIndex = 1)
         val queenMock = mockk<Queen> {
             every { attacking } returns setOf(
                 Coordinates(rowIndex = 2, columnIndex = 3),
                 Coordinates(rowIndex = 0, columnIndex = 2),
                 Coordinates(rowIndex = 3, columnIndex = 1),
             )
-            every { coordinates } returns Coordinates(rowIndex = 1, columnIndex = 1)
+            every { coordinates } returns queenCoordinates
         }
-        every { boardStateHandlerMock.placeQueen(coordinates = coordinatesMock) } returns QueenPlacementResult.Conflict(queen = queenMock)
+        every { boardStateHandlerMock.placeQueen(coordinates = queenCoordinates) } returns QueenPlacementResult.Conflict(queen = queenMock)
         every { getBoardStateHandlerUseCaseMock(boardSize = navArgs.boardSize) } returns boardStateHandlerMock
         val sut = initSut(navArgs = navArgs.copy(allSolutionsCount = 45))
 
@@ -173,9 +173,7 @@ internal class GamePlayViewModelTest {
                 boardState = BoardStateUi(
                     board = getBoardDefinitionSize4Ui(
                         row3 = getBoardRow3Ui(column1 = getBoardRow3Ui()[1].copy(hasQueen = true, isError = true)),
-                        row2 = getBoardRow2Ui(column3 = getBoardRow2Ui()[3].copy(isError = true)),
                         row1 = getBoardRow1Ui(column0 = getBoardRow1Ui()[0].copy(hasQueen = true), column1 = getBoardRow1Ui()[1].copy(isError = true)),
-                        row0 = getBoardRow0Ui(column2 = getBoardRow0Ui()[2].copy(isError = true)),
                     )
                 ),
                 isWin = false,
@@ -186,7 +184,7 @@ internal class GamePlayViewModelTest {
 
             assertThat(awaitItem()).isEqualTo(uiStateWithoutErrors)
 
-            sut.onTileTap(coordinates = coordinatesMock)
+            sut.onTileTap(coordinates = queenCoordinates)
             repeat(3) {
                 expectNoEvents()
                 advanceTimeBy(199)
@@ -201,7 +199,7 @@ internal class GamePlayViewModelTest {
         }
 
         verify(exactly = 1) {
-            boardStateHandlerMock.placeQueen(coordinates = coordinatesMock)
+            boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
         }
     }
 

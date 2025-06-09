@@ -8,9 +8,11 @@ internal data class BoardTileUi(
     val isLight: Boolean,
     val rowNotation: String?,
     val columnNotation: String?,
-    val hasQueen: Boolean,
     val isError: Boolean,
-)
+    val hasQueen: Boolean,
+) {
+    val showQueen: Boolean = hasQueen || isError
+}
 
 internal fun BoardTile.toBoardTileUi(isError: Boolean) = BoardTileUi(
     coordinates = coordinates,

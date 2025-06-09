@@ -216,7 +216,7 @@ private fun Tile(
     tile: BoardTileUi,
     onClick: () -> Unit,
 ) {
-    val queenSizeAnimation = animateFloatAsState(targetValue = if (tile.hasQueen) 1f else 0f)
+    val queenSizeAnimation = animateFloatAsState(targetValue = if (tile.showQueen) 1f else 0f)
     var initialAnimationValue by remember { mutableFloatStateOf(0f) }
     val initialAnimation = animateFloatAsState(targetValue = initialAnimationValue)
 
