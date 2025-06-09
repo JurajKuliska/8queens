@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -44,6 +43,8 @@ import com.jurajkuliska.eightqueens.game.presentation.R
 import com.jurajkuliska.eightqueens.game.presentation.components.Board
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import com.jurajkuliska.eightqueens.ui.components.EightQueensScaffold
+import com.jurajkuliska.eightqueens.ui.components.OrientationAwareContainer
+import com.jurajkuliska.eightqueens.ui.components.visible
 import com.jurajkuliska.eightqueens.ui.theme.Spacing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -94,13 +95,12 @@ internal fun GamePlayScreen(
             onResetClick = viewModel::onResetClick,
             onPickDifferentBoardClick = viewModel::onPickDifferentBoardClick,
         )
-        Box {
-            contentDataHolder.PortraitContent(
-
-            )
-            if (uiState.isWin) {
-                CelebrationOverlay()
-            }
+        OrientationAwareContainer(
+            portrait = { contentDataHolder.PortraitContent() },
+            landscape = { contentDataHolder.LandscapeContent() }
+        )
+        if (uiState.isWin) {
+            CelebrationOverlay()
         }
     }
 }
@@ -110,7 +110,7 @@ private fun ContentDataHolder.PortraitContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Box(modifier = Modifier.height(150.dp)) {
+        Box(modifier = Modifier.height(80.dp)) {
             if (!uiState.isWin) {
                 InstructionsText(
                     modifier = Modifier.align(Alignment.Center),
@@ -130,14 +130,14 @@ private fun ContentDataHolder.PortraitContent(
             state = uiState.boardState,
             onTileTap = onTileTap,
         )
-        if (!uiState.isWin) {
-            QueensLeftText(
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-                queensLeft = uiState.queensLeft,
-                initialAlphaAnimationValue = initialAlphaAnimationValue,
-                initialOffsetAnimationValue = initialOffsetAnimationValue,
-            )
-        }
+        QueensLeftText(
+            modifier = Modifier
+                .align(alignment = Alignment.CenterHorizontally)
+                .visible(!uiState.isWin),
+            queensLeft = uiState.queensLeft,
+            initialAlphaAnimationValue = initialAlphaAnimationValue,
+            initialOffsetAnimationValue = initialOffsetAnimationValue,
+        )
         ControlButtons(
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
             isRestartGameButtonEnabled = uiState.isRestartGameButtonEnabled,
@@ -146,6 +146,52 @@ private fun ContentDataHolder.PortraitContent(
             onResetClick = onResetClick,
             onPickDifferentBoardClick = onPickDifferentBoardClick,
         )
+    }
+}
+
+@Composable
+private fun ContentDataHolder.LandscapeContent(
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier) {
+        Board(
+            modifier = Modifier.padding(horizontal = Spacing.xL),
+            state = uiState.boardState,
+            onTileTap = onTileTap,
+        )
+        Column {
+            Box(modifier = Modifier.height(80.dp)) {
+                if (!uiState.isWin) {
+                    InstructionsText(
+                        modifier = Modifier.align(Alignment.Center),
+                        totalQueensToPlace = uiState.totalQueensToPlace,
+                        initialAlphaAnimationValue = initialAlphaAnimationValue,
+                        initialOffsetAnimationValue = initialOffsetAnimationValue,
+                    )
+                }
+                WinningText(
+                    modifier = Modifier.align(Alignment.Center),
+                    isWin = uiState.isWin,
+                    allSolutionsCount = uiState.allSolutionsCount
+                )
+            }
+            QueensLeftText(
+                modifier = Modifier
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .visible(!uiState.isWin),
+                queensLeft = uiState.queensLeft,
+                initialAlphaAnimationValue = initialAlphaAnimationValue,
+                initialOffsetAnimationValue = initialOffsetAnimationValue,
+            )
+            ControlButtons(
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+                isRestartGameButtonEnabled = uiState.isRestartGameButtonEnabled,
+                initialAlphaAnimationValue = initialAlphaAnimationValue,
+                initialOffsetAnimationValue = initialOffsetAnimationValue,
+                onResetClick = onResetClick,
+                onPickDifferentBoardClick = onPickDifferentBoardClick,
+            )
+        }
     }
 }
 
@@ -176,7 +222,7 @@ private fun WinningText(
         modifier = modifier
             .padding(horizontal = Spacing.L)
             .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioHighBouncy))
-            .fillMaxWidth(if (isWin) 1f else 0f),
+            .fillMaxSize(if (isWin) 1f else 0f),
         text = stringResource(id = R.string.gameplay_screen_winning_message, allSolutionsCount),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.titleLarge.copy(lineBreak = LineBreak.Heading, color = MaterialTheme.colorScheme.tertiary),
@@ -192,7 +238,7 @@ private fun QueensLeftText(
 ) {
     Text(
         modifier = modifier
-            .padding(all = Spacing.xxL)
+            .padding(horizontal = Spacing.xxL)
             .alpha(alpha = initialAlphaAnimationValue)
             .offset(y = initialOffsetAnimationValue),
         text = stringResource(id = R.string.gameplay_screen_queens_left, queensLeft)

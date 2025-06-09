@@ -97,7 +97,7 @@ private fun ContentDataHolder.LandscapeContent() {
         )
         ChooseDifficulty(
             modifier = Modifier
-                .padding(top = 60.dp)
+                .padding(top = Spacing.xxL)
                 .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
             pickerState = boardSizePickerState,
             onNext = onNext,
@@ -120,7 +120,7 @@ private fun ContentDataHolder.PortraitContent() {
         )
         ChooseDifficulty(
             modifier = Modifier
-                .padding(top = 60.dp)
+                .padding(top = Spacing.xxL)
                 .alpha(alpha = enterAnimation.chooseDifficultyAlpha)
                 .align(Alignment.CenterHorizontally),
             pickerState = boardSizePickerState,
@@ -139,7 +139,7 @@ private fun Logo(
     Column(modifier = modifier) {
         Image(
             modifier = Modifier
-                .size(200.dp)
+                .size(144.dp)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(id = UiR.drawable.chess_queen),
             contentDescription = stringResource(id = R.string.initial_screen_game_icon_content_description),
