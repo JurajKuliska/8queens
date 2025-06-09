@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -47,6 +46,7 @@ import com.jurajkuliska.eightqueens.game.presentation.R
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardSize
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
 import com.jurajkuliska.eightqueens.ui.components.EightQueensScaffold
+import com.jurajkuliska.eightqueens.ui.components.OrientationAwareContainer
 import com.jurajkuliska.eightqueens.ui.theme.Spacing
 import com.jurajkuliska.eightqueens.ui.theme.Typography
 import kotlinx.coroutines.flow.Flow
@@ -67,31 +67,73 @@ internal fun InitialScreen(
 
     EightQueensScaffold {
         val enterAnimation = getEnterAnimation()
-        Column(
+
+        val contentDataHolder = ContentDataHolder(
+            enterAnimation = enterAnimation,
+            boardSizePickerState = uiState.boardSizePickerState,
+            onNext = viewModel::onNext,
+            onBoardSizePickerOpen = viewModel::onBoardSizePickerOpen,
+            onBoardSizePick = viewModel::onBoardSizePick,
+            onBoardSizePickerDismiss = viewModel::onBoardSizePickerDismiss,
+        )
+
+        OrientationAwareContainer(
             modifier = Modifier.align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Logo(
-                modifier = Modifier
-                    .scale(scale = enterAnimation.logoScaleValue)
-                    .offset(y = enterAnimation.logoOffsetValue)
-            )
-            ChooseDifficulty(
-                modifier = Modifier
-                    .padding(top = 60.dp)
-                    .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
-                pickerState = uiState.boardSizePickerState,
-                onNext = viewModel::onNext,
-                onBoardSizePickerOpen = viewModel::onBoardSizePickerOpen,
-                onBoardSizePick = viewModel::onBoardSizePicked,
-                onBoardSizePickerDismiss = viewModel::onBoardSizePickerDismiss,
-            )
-        }
+            portrait = { contentDataHolder.PortraitContent() },
+            landscape = { contentDataHolder.LandscapeContent() },
+        )
     }
 }
 
 @Composable
-private fun ColumnScope.Logo(
+private fun ContentDataHolder.LandscapeContent() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Logo(
+            modifier = Modifier
+                .scale(scale = enterAnimation.logoScaleValue)
+                .offset(x = enterAnimation.logoOffsetValue)
+        )
+        ChooseDifficulty(
+            modifier = Modifier
+                .padding(top = 60.dp)
+                .alpha(alpha = enterAnimation.chooseDifficultyAlpha),
+            pickerState = boardSizePickerState,
+            onNext = onNext,
+            onBoardSizePickerOpen = onBoardSizePickerOpen,
+            onBoardSizePick = onBoardSizePick,
+            onBoardSizePickerDismiss = onBoardSizePickerDismiss,
+        )
+    }
+}
+
+@Composable
+private fun ContentDataHolder.PortraitContent() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Logo(
+            modifier = Modifier
+                .scale(scale = enterAnimation.logoScaleValue)
+                .offset(y = enterAnimation.logoOffsetValue)
+        )
+        ChooseDifficulty(
+            modifier = Modifier
+                .padding(top = 60.dp)
+                .alpha(alpha = enterAnimation.chooseDifficultyAlpha)
+                .align(Alignment.CenterHorizontally),
+            pickerState = boardSizePickerState,
+            onNext = onNext,
+            onBoardSizePickerOpen = onBoardSizePickerOpen,
+            onBoardSizePick = onBoardSizePick,
+            onBoardSizePickerDismiss = onBoardSizePickerDismiss,
+        )
+    }
+}
+
+@Composable
+private fun Logo(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -113,7 +155,7 @@ private fun ColumnScope.Logo(
 }
 
 @Composable
-private fun ColumnScope.ChooseDifficulty(
+private fun ChooseDifficulty(
     pickerState: InitialViewModel.UiState.BoardSizePickerState,
     modifier: Modifier = Modifier,
     onNext: () -> Unit,
@@ -122,7 +164,7 @@ private fun ColumnScope.ChooseDifficulty(
     onBoardSizePickerDismiss: () -> Unit,
 ) {
     Column(
-        modifier = modifier.align(Alignment.CenterHorizontally),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(space = Spacing.L)
     ) {
@@ -257,4 +299,13 @@ private data class EnterAnimation(
     val logoScaleValue: Float,
     val logoOffsetValue: Dp,
     val chooseDifficultyAlpha: Float,
+)
+
+private data class ContentDataHolder(
+    val enterAnimation: EnterAnimation,
+    val boardSizePickerState: InitialViewModel.UiState.BoardSizePickerState,
+    val onNext: () -> Unit,
+    val onBoardSizePickerOpen: () -> Unit,
+    val onBoardSizePick: (BoardSize) -> Unit,
+    val onBoardSizePickerDismiss: () -> Unit,
 )

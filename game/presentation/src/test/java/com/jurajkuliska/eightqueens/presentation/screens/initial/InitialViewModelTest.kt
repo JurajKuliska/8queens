@@ -29,11 +29,11 @@ class InitialViewModelTest {
             assertThat(awaitItem())
                 .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = true, selectedOption = BoardSize.EightByEight)))
 
-            sut.onBoardSizePicked(boardSize = BoardSize.SixBySix)
+            sut.onBoardSizePick(boardSize = BoardSize.SixBySix)
             assertThat(expectMostRecentItem())
                 .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = false, selectedOption = BoardSize.SixBySix)))
 
-            sut.onBoardSizePicked(boardSize = BoardSize.FourByFour)
+            sut.onBoardSizePick(boardSize = BoardSize.FourByFour)
             assertThat(awaitItem())
                 .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = false, selectedOption = BoardSize.FourByFour)))
         }
@@ -49,7 +49,7 @@ class InitialViewModelTest {
             assertThat(awaitItem())
                 .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = true, selectedOption = BoardSize.EightByEight)))
 
-            sut.onBoardSizePicked(boardSize = BoardSize.SixBySix)
+            sut.onBoardSizePick(boardSize = BoardSize.SixBySix)
             assertThat(expectMostRecentItem())
                 .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = false, selectedOption = BoardSize.SixBySix)))
 
@@ -84,7 +84,7 @@ class InitialViewModelTest {
         sut.uiState.test uiState@{
             sut.uiEvent.test uiEvent@{
                 assertThat(this@uiState.awaitItem()).isEqualTo(defaultUiState)
-                sut.onBoardSizePicked(boardSize = BoardSize.FiveByFive)
+                sut.onBoardSizePick(boardSize = BoardSize.FiveByFive)
                 assertThat(this@uiState.awaitItem())
                     .isEqualTo(UiState(boardSizePickerState = BoardSizePickerState(isExpanded = false, selectedOption = BoardSize.FiveByFive)))
 
