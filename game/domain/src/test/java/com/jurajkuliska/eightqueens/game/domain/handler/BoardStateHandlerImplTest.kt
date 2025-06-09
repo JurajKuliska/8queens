@@ -2,9 +2,9 @@ package com.jurajkuliska.eightqueens.game.domain.handler
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth.assertWithMessage
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
-import com.jurajkuliska.eightqueens.game.domain.model.Queen
 import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardDefinitionSize4
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow0
@@ -181,7 +181,7 @@ internal class BoardStateHandlerImplTest {
     }
 
     @Test
-    fun `test board conflicting queen`() = runTest {
+    fun `test board conflicting queen - 1 queen on the board`() = runTest {
         val sut = BoardStateHandlerImpl(
             boardSize = 4,
             boardDefinition = getBoardDefinitionSize4()
@@ -216,16 +216,85 @@ internal class BoardStateHandlerImplTest {
                 1 to 3,
                 3 to 3,
             ).forEach { coordinatesPair ->
-                assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second))).isEqualTo(
-                    QueenPlacementResult.Conflict(
-                        queen = Queen(
-                            coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second),
-                            boardSize = 4
-                        )
-                    )
-                )
+                assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
+                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .isEqualTo(QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1))))
             }
             expectNoEvents()
+        }
+    }
+
+    @Test
+    fun `test board conflicting queen - 2 queens on the board`() = runTest {
+        val sut = BoardStateHandlerImpl(
+            boardSize = 4,
+            boardDefinition = getBoardDefinitionSize4()
+        )
+        sut.board.test {
+            assertThat(awaitItem()).isEqualTo(boardStateDefault)
+            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
+
+            /**    0  1  2  3
+             *  0 [X][X][Q][X]
+             *  1 [ ][X][X][X]
+             *  2 [X][X][X][ ]
+             *  3 [X][Q][X][X]
+             */
+            assertThat(expectMostRecentItem()).isEqualTo(
+                BoardState(
+                    board = listOf(
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow2(),
+                        getBoardRow1(),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                    ),
+                )
+            )
+
+            // conflicts for both Queens
+            listOf(
+                0 to 1,
+                1 to 1,
+                1 to 3,
+                2 to 0,
+                2 to 2,
+                3 to 2,
+            ).forEach { coordinatesPair ->
+                assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
+                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .isEqualTo(
+                        QueenPlacementResult.Conflict(
+                            conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), Coordinates(rowIndex = 0, columnIndex = 2))
+                        )
+                    )
+            }
+
+            // Conflicts only for queen on coordinates [0,2]
+            listOf(
+                0 to 0,
+                0 to 3,
+                1 to 2,
+            ).forEach { coordinatesPair ->
+                assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
+                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .isEqualTo(
+                        QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 0, columnIndex = 2)))
+                    )
+            }
+
+            // Conflicts only for queen on coordinates [3,1]
+            listOf(
+                2 to 1,
+                3 to 0,
+                3 to 3,
+            ).forEach { coordinatesPair ->
+                assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
+                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .isEqualTo(
+                        QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1)))
+                    )
+            }
         }
     }
 

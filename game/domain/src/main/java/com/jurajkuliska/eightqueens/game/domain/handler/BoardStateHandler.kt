@@ -47,7 +47,8 @@ internal class BoardStateHandlerImpl(
                 queens.value = queens.value + queen
                 QueenPlacementResult.Success.Added
             } else {
-                QueenPlacementResult.Conflict(queen = queen)
+                val conflictingQueensCoordinates = queens.value.filter { it.attacking.contains(coordinates) }.map { it.coordinates }.toSet()
+                QueenPlacementResult.Conflict(conflictingCoordinates = conflictingQueensCoordinates)
             }
         }
 

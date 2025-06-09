@@ -5,7 +5,6 @@ import com.google.common.truth.Truth.assertThat
 import com.jurajkuliska.eightqueens.game.domain.handler.BoardStateHandler
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
-import com.jurajkuliska.eightqueens.game.domain.model.Queen
 import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
 import com.jurajkuliska.eightqueens.game.domain.usecase.GetBoardStateHandlerUseCase
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardStateUi
@@ -127,15 +126,9 @@ internal class GamePlayViewModelTest {
     @Test
     fun test_onTileTap_placeQueen_returns_Conflict() = runTest {
         val queenCoordinates = Coordinates(rowIndex = 1, columnIndex = 1)
-        val queenMock = mockk<Queen> {
-            every { attacking } returns setOf(
-                Coordinates(rowIndex = 2, columnIndex = 3),
-                Coordinates(rowIndex = 0, columnIndex = 2),
-                Coordinates(rowIndex = 3, columnIndex = 1),
-            )
-            every { coordinates } returns queenCoordinates
-        }
-        every { boardStateHandlerMock.placeQueen(coordinates = queenCoordinates) } returns QueenPlacementResult.Conflict(queen = queenMock)
+        every {
+            boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
+        } returns QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), queenCoordinates))
         every { getBoardStateHandlerUseCaseMock(boardSize = navArgs.boardSize) } returns boardStateHandlerMock
         val sut = initSut(navArgs = navArgs.copy(allSolutionsCount = 45))
 

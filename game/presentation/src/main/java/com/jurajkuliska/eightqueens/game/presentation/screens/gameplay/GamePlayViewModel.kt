@@ -67,10 +67,9 @@ internal class GamePlayViewModel(
         when (val result = boardStateHandler.placeQueen(coordinates = coordinates)) {
             is QueenPlacementResult.Conflict -> {
                 errorJob = viewModelScope.launch {
-                    val tilesWithErrors = result.queen.let { it.attacking + it.coordinates }.intersect(uiState.value.getCoordinatesWithQueens())
                     repeat(3) {
                         delay(200)
-                        errorTiles.value = tilesWithErrors + coordinates
+                        errorTiles.value = result.conflictingCoordinates + coordinates
                         delay(200)
                         errorTiles.value = emptySet()
                     }
@@ -81,8 +80,6 @@ internal class GamePlayViewModel(
             QueenPlacementResult.Success.Added -> Unit // no need to do anything
         }
     }
-
-    private fun UiState.getCoordinatesWithQueens() = uiState.value.boardState.board.flatten().filter { it.hasQueen }.map { it.coordinates }
 
     fun onResetClick() {
         boardStateHandler.reset()
