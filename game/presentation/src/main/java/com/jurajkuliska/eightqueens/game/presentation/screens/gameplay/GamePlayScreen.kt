@@ -209,7 +209,7 @@ private fun InstructionsText(
 ) {
     Text(
         modifier = modifier
-            .padding(horizontal = Spacing.xxL)
+            .padding(horizontal = Spacing.xL)
             .alpha(alpha = initialAlphaAnimationValue)
             .offset(y = -initialOffsetAnimationValue),
         text = stringResource(id = R.string.gameplay_screen_instructions, totalQueensToPlace),
@@ -243,7 +243,7 @@ private fun QueensLeftText(
 ) {
     Text(
         modifier = modifier
-            .padding(horizontal = Spacing.xxL)
+            .padding(horizontal = Spacing.xL)
             .alpha(alpha = initialAlphaAnimationValue)
             .offset(y = initialOffsetAnimationValue),
         text = stringResource(id = R.string.gameplay_screen_queens_left, queensLeft)
