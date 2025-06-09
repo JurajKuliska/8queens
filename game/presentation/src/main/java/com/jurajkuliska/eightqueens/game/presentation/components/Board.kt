@@ -47,7 +47,11 @@ internal fun Board(
     onTileTap: (Coordinates) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.aspectRatio(ratio = 1f)) {
+    Column(
+        modifier = modifier
+            .aspectRatio(ratio = 1f)
+            .background(TileLight)
+    ) {
         state.board.forEach { row ->
             Row(
                 modifier = Modifier.weight(1f)
