@@ -3,12 +3,12 @@ package com.jurajkuliska.eightqueens.game.domain.model
 import kotlin.math.min
 
 data class Queen(
-    val coordinates: Coordinates,
+    override val coordinates: Coordinates,
     private val boardSize: Int,
-) {
+) : Piece {
     private val maxIndex = boardSize - 1
 
-    val attacking: Set<Coordinates> =
+    override val attacking: Set<Coordinates> =
         rowCoordinates() + columnCoordinates() + diagonalCoordinates() - coordinates
 
     private fun rowCoordinates() = (0 until boardSize).map {

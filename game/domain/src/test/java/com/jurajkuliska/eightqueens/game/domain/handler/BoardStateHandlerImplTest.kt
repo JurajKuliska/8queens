@@ -5,7 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
-import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
+import com.jurajkuliska.eightqueens.game.domain.model.PiecePlacementResult
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardDefinitionSize4
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow0
 import com.jurajkuliska.eightqueens.game.domain.testdata.BoardTileTestData.getBoardRow1
@@ -35,7 +35,7 @@ internal class BoardStateHandlerImplTest {
         )
         sut.board.test {
             assertThat(awaitItem()).isEqualTo(boardStateDefault)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][ ][ ]
              *  1 [ ][ ][ ][ ]
@@ -45,14 +45,14 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
                         getBoardRow1(),
                         getBoardRow0(),
                     ),
                 )
             )
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][ ][ ]
              *  1 [Q][ ][ ][ ]
@@ -62,14 +62,14 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
-                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
                         getBoardRow0(),
                     ),
                 )
             )
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][Q][ ]
              *  1 [Q][ ][ ][ ]
@@ -79,14 +79,14 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
-                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
-                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasPiece = true)),
                     ),
                 )
             )
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][Q][ ]
              *  1 [Q][ ][ ][ ]
@@ -96,10 +96,10 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                        getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
-                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
-                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                        getBoardRow2(column3 = getBoardRow2()[3].copy(hasPiece = true)),
+                        getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasPiece = true)),
                     ),
                 )
             )
@@ -114,11 +114,11 @@ internal class BoardStateHandlerImplTest {
         )
         sut.board.test {
             assertThat(awaitItem()).isEqualTo(boardStateDefault)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(PiecePlacementResult.Success.Added)
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(PiecePlacementResult.Success.Added)
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][Q][ ]
              *  1 [Q][ ][ ][ ]
@@ -126,7 +126,7 @@ internal class BoardStateHandlerImplTest {
              *  3 [ ][Q][ ][ ]
              */
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(QueenPlacementResult.Success.Removed)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(PiecePlacementResult.Success.Removed)
             /**    0  1  2  3
              *  0 [ ][ ][Q][ ]
              *  1 [ ][ ][ ][ ]
@@ -136,14 +136,14 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
                         getBoardRow1(),
-                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasPiece = true)),
                     ),
                 )
             )
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Removed)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(PiecePlacementResult.Success.Removed)
             /**    0  1  2  3
              *  0 [ ][ ][ ][ ]
              *  1 [ ][ ][ ][ ]
@@ -153,14 +153,14 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
                         getBoardRow1(),
                         getBoardRow0(),
                     ),
                 )
             )
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][ ][ ][ ]
              *  1 [ ][ ][ ][ ]
@@ -170,8 +170,8 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                        getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                        getBoardRow2(column3 = getBoardRow2()[3].copy(hasPiece = true)),
                         getBoardRow1(),
                         getBoardRow0(),
                     ),
@@ -188,7 +188,7 @@ internal class BoardStateHandlerImplTest {
         )
         sut.board.test {
             assertThat(awaitItem()).isEqualTo(boardStateDefault)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(PiecePlacementResult.Success.Added)
             /**    0  1  2  3
              *  0 [ ][X][ ][ ]
              *  1 [ ][X][ ][X]
@@ -198,7 +198,7 @@ internal class BoardStateHandlerImplTest {
             assertThat(awaitItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
                         getBoardRow1(),
                         getBoardRow0(),
@@ -217,8 +217,8 @@ internal class BoardStateHandlerImplTest {
                 3 to 3,
             ).forEach { coordinatesPair ->
                 assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
-                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
-                    .isEqualTo(QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1))))
+                    .that(sut.placePiece(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .isEqualTo(PiecePlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1))))
             }
             expectNoEvents()
         }
@@ -232,8 +232,8 @@ internal class BoardStateHandlerImplTest {
         )
         sut.board.test {
             assertThat(awaitItem()).isEqualTo(boardStateDefault)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(QueenPlacementResult.Success.Added)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(PiecePlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(PiecePlacementResult.Success.Added)
 
             /**    0  1  2  3
              *  0 [X][X][Q][X]
@@ -244,10 +244,10 @@ internal class BoardStateHandlerImplTest {
             assertThat(expectMostRecentItem()).isEqualTo(
                 BoardState(
                     board = listOf(
-                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                        getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                         getBoardRow2(),
                         getBoardRow1(),
-                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                        getBoardRow0(column2 = getBoardRow0()[2].copy(hasPiece = true)),
                     ),
                 )
             )
@@ -262,9 +262,9 @@ internal class BoardStateHandlerImplTest {
                 3 to 2,
             ).forEach { coordinatesPair ->
                 assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
-                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .that(sut.placePiece(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
                     .isEqualTo(
-                        QueenPlacementResult.Conflict(
+                        PiecePlacementResult.Conflict(
                             conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), Coordinates(rowIndex = 0, columnIndex = 2))
                         )
                     )
@@ -277,9 +277,9 @@ internal class BoardStateHandlerImplTest {
                 1 to 2,
             ).forEach { coordinatesPair ->
                 assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
-                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .that(sut.placePiece(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
                     .isEqualTo(
-                        QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 0, columnIndex = 2)))
+                        PiecePlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 0, columnIndex = 2)))
                     )
             }
 
@@ -290,9 +290,9 @@ internal class BoardStateHandlerImplTest {
                 3 to 3,
             ).forEach { coordinatesPair ->
                 assertWithMessage("Conflict verification failed for coordinates $coordinatesPair")
-                    .that(sut.placeQueen(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
+                    .that(sut.placePiece(coordinates = Coordinates(rowIndex = coordinatesPair.first, columnIndex = coordinatesPair.second)))
                     .isEqualTo(
-                        QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1)))
+                        PiecePlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1)))
                     )
             }
         }
@@ -306,13 +306,13 @@ internal class BoardStateHandlerImplTest {
         )
         sut.board.test {
             assertThat(awaitItem()).isEqualTo(boardStateDefault)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 3, columnIndex = 1))).isEqualTo(PiecePlacementResult.Success.Added)
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 1, columnIndex = 0))).isEqualTo(PiecePlacementResult.Success.Added)
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 0, columnIndex = 2))).isEqualTo(PiecePlacementResult.Success.Added)
             skipItems(1)
-            assertThat(sut.placeQueen(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(QueenPlacementResult.Success.Added)
+            assertThat(sut.placePiece(coordinates = Coordinates(rowIndex = 2, columnIndex = 3))).isEqualTo(PiecePlacementResult.Success.Added)
             skipItems(1)
             sut.reset()
             assertThat(awaitItem()).isEqualTo(boardStateDefault)

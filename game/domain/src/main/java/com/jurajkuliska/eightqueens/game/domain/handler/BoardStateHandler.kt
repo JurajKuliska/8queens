@@ -3,8 +3,8 @@ package com.jurajkuliska.eightqueens.game.domain.handler
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.BoardTile
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
-import com.jurajkuliska.eightqueens.game.domain.model.Queen
-import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
+import com.jurajkuliska.eightqueens.game.domain.model.GameType
+import com.jurajkuliska.eightqueens.game.domain.model.PiecePlacementResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -13,51 +13,52 @@ interface BoardStateHandler {
 
     val board: Flow<BoardState>
 
-    fun placeQueen(coordinates: Coordinates): QueenPlacementResult
+    fun placePiece(coordinates: Coordinates): PiecePlacementResult
 
     fun reset()
 }
 
 internal class BoardStateHandlerImpl(
-    private val boardSize: Int,
+    private val gameType: GameType,
     private val boardDefinition: List<List<BoardTile>>,
 ) : BoardStateHandler {
 
-    private val queens = MutableStateFlow<Set<Queen>>(emptySet())
+    private val occupiedCoordinates = MutableStateFlow<Set<Coordinates>>(emptySet())
 
-    override val board: Flow<BoardState> = queens.map { queens ->
-        val queensCoordinates = queens.map { it.coordinates }.toSet()
+    override val board: Flow<BoardState> = occupiedCoordinates.map { queens ->
 
         BoardState(
             board = boardDefinition.map {
                 it.map { tile ->
-                    tile.copy(hasQueen = queensCoordinates.contains(tile.coordinates))
+                    tile.copy(hasPiece = occupiedCoordinates.value.contains(tile.coordinates))
                 }
             },
+            totalPiecesToPlace = gameType.totalPiecesToPlace,
         )
     }
 
-    override fun placeQueen(coordinates: Coordinates): QueenPlacementResult =
-        if (coordinates.hasQueen()) {
-            queens.value = queens.value.filterNot { it.coordinates == coordinates }.toSet()
-            QueenPlacementResult.Success.Removed
+    override fun placePiece(coordinates: Coordinates): PiecePlacementResult =
+        if (coordinates.hasPiece()) {
+            occupiedCoordinates.value = occupiedCoordinates.value.filterNot { it == coordinates }.toSet()
+            PiecePlacementResult.Success.Removed
         } else {
-            val queen = Queen(coordinates = coordinates, boardSize = boardSize)
-            if (coordinates.canPlaceQueen()) {
-                queens.value = queens.value + queen
-                QueenPlacementResult.Success.Added
+            if (coordinates.canPlacePiece()) {
+                occupiedCoordinates.value = occupiedCoordinates.value + coordinates
+                PiecePlacementResult.Success.Added
             } else {
-                val conflictingQueensCoordinates = queens.value.filter { it.attacking.contains(coordinates) }.map { it.coordinates }.toSet()
-                QueenPlacementResult.Conflict(conflictingCoordinates = conflictingQueensCoordinates)
+                val conflictingCoordinates = occupiedCoordinates.value.filter {
+                    gameType.attacking(it).contains(it)
+                }.toSet()
+                PiecePlacementResult.Conflict(conflictingCoordinates = conflictingCoordinates)
             }
         }
 
     override fun reset() {
-        queens.value = emptySet()
+        occupiedCoordinates.value = emptySet()
     }
 
-    private fun Coordinates.hasQueen() = queens.value.map { it.coordinates }.contains(this)
+    private fun Coordinates.hasPiece() = occupiedCoordinates.value.contains(this)
 
-    private fun Coordinates.canPlaceQueen() =
-        !queens.value.map { it.attacking }.flatten().toSet().contains(this)
+    private fun Coordinates.canPlacePiece() =
+        !occupiedCoordinates.value.map { gameType.attacking(it) }.flatten().toSet().contains(this)
 }

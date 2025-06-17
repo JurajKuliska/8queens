@@ -5,7 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import com.jurajkuliska.eightqueens.game.domain.handler.BoardStateHandler
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
-import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
+import com.jurajkuliska.eightqueens.game.domain.model.PiecePlacementResult
 import com.jurajkuliska.eightqueens.game.domain.usecase.GetBoardStateHandlerUseCase
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardStateUi
 import com.jurajkuliska.eightqueens.game.presentation.navigation.GameRoute
@@ -74,10 +74,10 @@ internal class GamePlayViewModelTest {
 
             boardFlow.value = BoardState(
                 board = getBoardDefinitionSize4(
-                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                    row2 = getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
-                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
-                    row0 = getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                    row2 = getBoardRow2(column3 = getBoardRow2()[3].copy(hasPiece = true)),
+                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
+                    row0 = getBoardRow0(column2 = getBoardRow0()[2].copy(hasPiece = true)),
                 ),
             )
 
@@ -100,8 +100,8 @@ internal class GamePlayViewModelTest {
 
             boardFlow.value = BoardState(
                 board = getBoardDefinitionSize4(
-                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
                 ),
             )
 
@@ -127,8 +127,8 @@ internal class GamePlayViewModelTest {
     fun test_onTileTap_placeQueen_returns_Conflict() = runTest {
         val queenCoordinates = Coordinates(rowIndex = 1, columnIndex = 1)
         every {
-            boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
-        } returns QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), queenCoordinates))
+            boardStateHandlerMock.placePiece(coordinates = queenCoordinates)
+        } returns PiecePlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), queenCoordinates))
         every { getBoardStateHandlerUseCaseMock(boardSize = navArgs.boardSize) } returns boardStateHandlerMock
         val sut = initSut(navArgs = navArgs.copy(allSolutionsCount = 45))
 
@@ -145,8 +145,8 @@ internal class GamePlayViewModelTest {
 
             boardFlow.value = BoardState(
                 board = getBoardDefinitionSize4(
-                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
                 ),
             )
 
@@ -192,7 +192,7 @@ internal class GamePlayViewModelTest {
         }
 
         verify(exactly = 1) {
-            boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
+            boardStateHandlerMock.placePiece(coordinates = queenCoordinates)
         }
     }
 
@@ -200,9 +200,9 @@ internal class GamePlayViewModelTest {
     fun test_onTileTap_afterPlacingQueenWithError_cancels_previousError() =
         testCancelPreviousErrorAfterFunctionCall {
             val coordinates = Coordinates(rowIndex = 2, columnIndex = 2)
-            every { boardStateHandlerMock.placeQueen(coordinates = coordinates) } returns QueenPlacementResult.Success.Added
+            every { boardStateHandlerMock.placePiece(coordinates = coordinates) } returns PiecePlacementResult.Success.Added
             it.onTileTap(coordinates = coordinates)
-            verify(exactly = 1) { boardStateHandlerMock.placeQueen(coordinates = coordinates) }
+            verify(exactly = 1) { boardStateHandlerMock.placePiece(coordinates = coordinates) }
         }
 
     @Test
@@ -217,8 +217,8 @@ internal class GamePlayViewModelTest {
     private fun testCancelPreviousErrorAfterFunctionCall(function: (GamePlayViewModel) -> Unit) = runTest {
         val queenCoordinates = Coordinates(rowIndex = 1, columnIndex = 1)
         every {
-            boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
-        } returns QueenPlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), queenCoordinates))
+            boardStateHandlerMock.placePiece(coordinates = queenCoordinates)
+        } returns PiecePlacementResult.Conflict(conflictingCoordinates = setOf(Coordinates(rowIndex = 3, columnIndex = 1), queenCoordinates))
         every { getBoardStateHandlerUseCaseMock(boardSize = navArgs.boardSize) } returns boardStateHandlerMock
         val sut = initSut(navArgs = navArgs.copy(allSolutionsCount = 45))
 
@@ -235,8 +235,8 @@ internal class GamePlayViewModelTest {
 
             boardFlow.value = BoardState(
                 board = getBoardDefinitionSize4(
-                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                    row3 = getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                    row1 = getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
                 ),
             )
 
@@ -277,7 +277,7 @@ internal class GamePlayViewModelTest {
             assertThat(awaitItem()).isEqualTo(uiStateWithoutErrors)
 
             verify(exactly = 1) {
-                boardStateHandlerMock.placeQueen(coordinates = queenCoordinates)
+                boardStateHandlerMock.placePiece(coordinates = queenCoordinates)
             }
         }
     }
@@ -285,7 +285,7 @@ internal class GamePlayViewModelTest {
     @Test
     fun test_onTileTap_placeQueen_returns_Success_Added() = runTest {
         val coordinatesMock = mockk<Coordinates>()
-        every { boardStateHandlerMock.placeQueen(coordinates = coordinatesMock) } returns QueenPlacementResult.Success.Added
+        every { boardStateHandlerMock.placePiece(coordinates = coordinatesMock) } returns PiecePlacementResult.Success.Added
         every { getBoardStateHandlerUseCaseMock(boardSize = navArgs.boardSize) } returns boardStateHandlerMock
         val sut = initSut()
 
@@ -306,14 +306,14 @@ internal class GamePlayViewModelTest {
         }
 
         verify(exactly = 1) {
-            boardStateHandlerMock.placeQueen(coordinates = coordinatesMock)
+            boardStateHandlerMock.placePiece(coordinates = coordinatesMock)
         }
     }
 
     @Test
     fun test_onTileTap_placeQueen_returns_Success_Removed() = runTest {
         val coordinatesMock = mockk<Coordinates>()
-        every { boardStateHandlerMock.placeQueen(coordinates = coordinatesMock) } returns QueenPlacementResult.Success.Removed
+        every { boardStateHandlerMock.placePiece(coordinates = coordinatesMock) } returns PiecePlacementResult.Success.Removed
         every { getBoardStateHandlerUseCaseMock(boardSize = 5) } returns boardStateHandlerMock
         val sut = initSut(navArgs.copy(boardSize = 5))
 
@@ -334,7 +334,7 @@ internal class GamePlayViewModelTest {
         }
 
         verify(exactly = 1) {
-            boardStateHandlerMock.placeQueen(coordinates = coordinatesMock)
+            boardStateHandlerMock.placePiece(coordinates = coordinatesMock)
         }
     }
 

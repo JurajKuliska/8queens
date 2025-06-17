@@ -57,12 +57,7 @@ internal class InitialViewModel : ViewModel() {
     fun onNext() {
         viewModelScope.launch {
             _uiEvent.emit(
-                UiEvent.NavigateToGamePlay(
-                    route = GameRoute.GamePlay(
-                        boardSize = boardSize.value.size,
-                        allSolutionsCount = boardSize.value.allSolutionsCount
-                    )
-                )
+                UiEvent.NavigateToGamePlay(route = GameRoute.GamePlay(boardSize = boardSize.value.size, type = GameRoute.GamePlay.Type.Knights))
             )
         }
     }

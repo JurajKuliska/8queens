@@ -5,5 +5,5 @@ data class BoardTile(
     val isLight: Boolean,
     val rowNotation: String?,
     val columnNotation: String?,
-    val hasQueen: Boolean,
+    val hasPiece: Boolean,
 )

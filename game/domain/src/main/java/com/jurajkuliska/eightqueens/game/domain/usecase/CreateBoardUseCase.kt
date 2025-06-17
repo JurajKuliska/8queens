@@ -19,7 +19,7 @@ internal class CreateBoardUseCaseImpl(
                     isLight = isWhite(boardSize = boardSize, rowIndex = rowIndex, columnIndex = columnIndex),
                     rowNotation = takeIf { columnIndex == 0 }?.let { (rowIndex + 1).toString() },
                     columnNotation = takeIf { rowIndex == 0 }?.let { getColumnNotationUseCase(columnIndex = columnIndex) }?.toString(),
-                    hasQueen = false,
+                    hasPiece = false,
                 )
             }
         }

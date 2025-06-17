@@ -2,8 +2,8 @@ package com.jurajkuliska.eightqueens.game.domain.model
 
 data class BoardState(
     val board: List<List<BoardTile>>,
+    val totalPiecesToPlace: Int,
 ) {
-    val totalQueensToPlace = board.size
-    val queensLeft = totalQueensToPlace - board.flatten().count { it.hasQueen }
+    val queensLeft = totalPiecesToPlace - board.flatten().count { it.hasPiece }
     val isWin = queensLeft == 0
 }

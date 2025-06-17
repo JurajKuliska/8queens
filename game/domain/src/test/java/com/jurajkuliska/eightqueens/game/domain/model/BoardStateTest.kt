@@ -17,7 +17,7 @@ internal class BoardStateTest {
     @Parameters(method = "getTotalQueensToPlaceTestData")
     fun `test totalQueensToPlace and queensLeft`(testData: TestDataHolder) {
         BoardState(board = testData.inputBoard).run {
-            assertThat(totalQueensToPlace).isEqualTo(testData.expectedTotalQueensToPlace)
+            assertThat(totalPiecesToPlace).isEqualTo(testData.expectedTotalQueensToPlace)
             assertThat(queensLeft).isEqualTo(testData.expectedQueensLeft)
         }
     }
@@ -26,9 +26,9 @@ internal class BoardStateTest {
         TestDataHolder(inputBoard = listOf(), expectedTotalQueensToPlace = 0, expectedQueensLeft = 0),
         TestDataHolder(
             inputBoard = listOf(
-                getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                 getBoardRow2(),
-                getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
+                getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
                 getBoardRow0(),
             ),
             expectedTotalQueensToPlace = 4,
@@ -36,17 +36,17 @@ internal class BoardStateTest {
         ),
         TestDataHolder(
             inputBoard = listOf(
-                getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
-                getBoardRow2(column3 = getBoardRow2()[3].copy(hasQueen = true)),
-                getBoardRow1(column0 = getBoardRow1()[0].copy(hasQueen = true)),
-                getBoardRow0(column2 = getBoardRow0()[2].copy(hasQueen = true)),
+                getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
+                getBoardRow2(column3 = getBoardRow2()[3].copy(hasPiece = true)),
+                getBoardRow1(column0 = getBoardRow1()[0].copy(hasPiece = true)),
+                getBoardRow0(column2 = getBoardRow0()[2].copy(hasPiece = true)),
             ),
             expectedTotalQueensToPlace = 4,
             expectedQueensLeft = 0,
         ),
         TestDataHolder(
             inputBoard = listOf(
-                getBoardRow3(column1 = getBoardRow3()[1].copy(hasQueen = true)),
+                getBoardRow3(column1 = getBoardRow3()[1].copy(hasPiece = true)),
                 getBoardRow2(),
                 getBoardRow0(),
             ),

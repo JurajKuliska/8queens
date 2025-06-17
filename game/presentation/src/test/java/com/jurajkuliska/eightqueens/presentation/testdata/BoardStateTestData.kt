@@ -143,7 +143,7 @@ internal object BoardStateTestData {
         rowNotation = rowNotation,
         columnNotation = columnNotation,
         isLight = true,
-        hasQueen = false,
+        hasPiece = false,
     )
 
     internal fun createBlackBoardTile(
@@ -155,7 +155,7 @@ internal object BoardStateTestData {
         rowNotation = rowNotation,
         columnNotation = columnNotation,
         isLight = false,
-        hasQueen = false,
+        hasPiece = false,
     )
 
     internal fun createWhiteBoardTileUi(

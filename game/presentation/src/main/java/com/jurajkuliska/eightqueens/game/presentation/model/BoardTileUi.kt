@@ -19,6 +19,6 @@ internal fun BoardTile.toBoardTileUi(isError: Boolean) = BoardTileUi(
     isLight = isLight,
     rowNotation = rowNotation,
     columnNotation = columnNotation,
-    hasQueen = hasQueen,
+    hasQueen = hasPiece,
     isError = isError,
 )

@@ -9,5 +9,10 @@ sealed class GameRoute {
     data object Initial : GameRoute()
 
     @Serializable
-    data class GamePlay(val boardSize: Int, val allSolutionsCount: Int) : GameRoute()
+    data class GamePlay(val boardSize: Int, val type: Type) : GameRoute() {
+        enum class Type {
+            Queens,
+            Knights,
+        }
+    }
 }

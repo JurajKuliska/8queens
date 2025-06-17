@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.jurajkuliska.eightqueens.game.domain.handler.BoardStateHandler
 import com.jurajkuliska.eightqueens.game.domain.model.BoardState
 import com.jurajkuliska.eightqueens.game.domain.model.Coordinates
-import com.jurajkuliska.eightqueens.game.domain.model.QueenPlacementResult
+import com.jurajkuliska.eightqueens.game.domain.model.GameType
+import com.jurajkuliska.eightqueens.game.domain.model.PiecePlacementResult
 import com.jurajkuliska.eightqueens.game.domain.usecase.GetBoardStateHandlerUseCase
 import com.jurajkuliska.eightqueens.game.presentation.model.BoardStateUi
 import com.jurajkuliska.eightqueens.game.presentation.model.toBoardTileUi
@@ -31,9 +32,13 @@ internal class GamePlayViewModel(
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    private val gameType = when (navArgs.type) {
+        GameRoute.GamePlay.Type.Queens -> GameType.Queen(boardSize = navArgs.boardSize)
+        GameRoute.GamePlay.Type.Knights -> GameType.Knight(boardSize = navArgs.boardSize)
+    }
     private var errorJob: Job? = null
     private val errorTiles = MutableStateFlow<Set<Coordinates>>(emptySet())
-    private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(boardSize = navArgs.boardSize)
+    private val boardStateHandler: BoardStateHandler = getBoardStateHandlerUseCase(gameType = gameType)
     val uiState: StateFlow<UiState> = combine(
         boardStateHandler.board,
         errorTiles,
@@ -42,10 +47,10 @@ internal class GamePlayViewModel(
             boardState = board.setErrorTiles(
                 errorTileCoordinates = errorTiles,
             ),
-            totalQueensToPlace = board.totalQueensToPlace,
+            totalQueensToPlace = board.totalPiecesToPlace,
             queensLeft = board.queensLeft,
             isWin = board.isWin,
-            allSolutionsCount = navArgs.allSolutionsCount,
+            allSolutionsCount = gameType.allSolutionsCount,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -57,14 +62,14 @@ internal class GamePlayViewModel(
             totalQueensToPlace = 0,
             queensLeft = 0,
             isWin = false,
-            allSolutionsCount = navArgs.allSolutionsCount,
+            allSolutionsCount = gameType.allSolutionsCount,
         ),
     )
 
     fun onTileTap(coordinates: Coordinates) {
         cancelErrorTilesAnimation()
-        when (val result = boardStateHandler.placeQueen(coordinates = coordinates)) {
-            is QueenPlacementResult.Conflict -> {
+        when (val result = boardStateHandler.placePiece(coordinates = coordinates)) {
+            is PiecePlacementResult.Conflict -> {
                 errorJob = viewModelScope.launch {
                     repeat(3) {
                         delay(200)
@@ -75,8 +80,8 @@ internal class GamePlayViewModel(
                 }
             }
 
-            QueenPlacementResult.Success.Removed,
-            QueenPlacementResult.Success.Added,
+            PiecePlacementResult.Success.Removed,
+            PiecePlacementResult.Success.Added,
                 -> Unit // no need to do anything
         }
     }
